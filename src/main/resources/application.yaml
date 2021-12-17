@@ -1,0 +1,15 @@
+#Spring Boot配置
+server:
+  #修改tomcat的端口为8080
+  port: 8080
+  #修改进入DispatcherServlet的规则为：*.html
+  servlet-path: \*.html
+#自定义配置
+person:
+  name: zhangsan
+  age: 12
+  sex: 男
+  likes:
+    - book
+    - movie
+    - girl
