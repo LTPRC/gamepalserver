@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.ltprc.listener.MyHttpSessionListener;
+import com.github.ltprc.util.ServerUtil;
 
 @RestController
 public class MyController {
@@ -18,15 +18,32 @@ public class MyController {
         return "Hello, springboot!";
     }
 
+//    @RequestMapping("login")
+//    public String login(HttpServletRequest request){
+//        HttpSession session = request.getSession(true);
+//        return "login";
+//    }
+
     @RequestMapping("login")
     public String login(HttpServletRequest request){
-        HttpSession session = request.getSession(true);
-        return "login";
+        HttpSession session = request.getSession(false);
+        if (null == session) {
+            session = request.getSession(true);
+            return session.getId() + " has been successfully logged in.";
+        } else {
+            return session.getId() + " has already been logged in.";
+        }
     }
 
     @RequestMapping("online")
     @ResponseBody
-    public String online(){
-        return "当前在线人数：" + MyHttpSessionListener.online + "人";
+    public int online() {
+        return ServerUtil.getOnline();
+    }
+
+    @RequestMapping("lobby")
+    @ResponseBody
+    public String lobby() {
+        return "当前在线人数：" + ServerUtil.getOnline() + "人";
     }
 }

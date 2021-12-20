@@ -17,7 +17,7 @@ public class MyServlet extends HttpServlet {
     }
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //此处自行添加doGet逻辑
+        //此处自行添加doPost逻辑
         super.doPost(req, resp);
     }
 }
