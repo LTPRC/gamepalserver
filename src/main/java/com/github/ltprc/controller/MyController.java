@@ -18,12 +18,6 @@ public class MyController {
         return "Hello, springboot!";
     }
 
-//    @RequestMapping("login")
-//    public String login(HttpServletRequest request){
-//        HttpSession session = request.getSession(true);
-//        return "login";
-//    }
-
     @RequestMapping("login")
     public String login(HttpServletRequest request){
         HttpSession session = request.getSession(false);

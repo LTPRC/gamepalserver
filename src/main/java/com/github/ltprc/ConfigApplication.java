@@ -1,16 +1,8 @@
 package com.github.ltprc;
 
-import java.util.ArrayList;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.annotation.Bean;
-
-import com.github.ltprc.listener.MyHttpSessionListener;
-import com.github.ltprc.servlet.MyServlet;
 
 @SpringBootApplication
 @ServletComponentScan
@@ -20,7 +12,6 @@ public class ConfigApplication {
 //        SpringApplication app = new SpringApplication(SpringBootProjectApplication.class);
 //        app.setBannerMode(Banner.Mode.OFF);
 //        app.run(args);
-      
         SpringApplication.run(ConfigApplication.class, args);
     }
     //或者启动如下方式，servlet上不需要添加注解
