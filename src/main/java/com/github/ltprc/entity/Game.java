@@ -1,7 +1,9 @@
 package com.github.ltprc.entity;
 
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,7 +12,8 @@ public class Game {
     private String name;
     private Subject subject;
     private int status;
-    private List<Player> playerList;
+    @NonNull
+    private Set<String> playerNameSet = new LinkedHashSet<>();
 
     public String getName() {
         return name;
@@ -36,11 +39,11 @@ public class Game {
         this.status = status;
     }
 
-    public List<Player> getPlayerList() {
-        return playerList;
+    public Set<String> getPlayerNameSet() {
+        return playerNameSet;
     }
 
-    public void setPlayerList(List<Player> playerList) {
-        this.playerList = playerList;
+    public void setPlayerNameSet(Set<String> playerNameSet) {
+        this.playerNameSet = playerNameSet;
     }
 }
