@@ -1,10 +1,12 @@
-package com.github.ltprc.entity;
+package com.github.ltprc.entity.subject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+
+import com.github.ltprc.entity.Room;
 
 @Component
 public abstract class Subject {
@@ -56,8 +58,8 @@ public abstract class Subject {
         this.maxRoomNum = maxRoomNum;
     }
 
-    public boolean addRoom(Room room) {
-        if (null == room || roomList.size() >= maxRoomNum) {
+    public boolean addRoom(@NonNull Room room) {
+        if (roomList.size() >= maxRoomNum) {
             return false;
         }
         roomList.add(room);

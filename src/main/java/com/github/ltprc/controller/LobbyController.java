@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.ltprc.entity.Player;
 import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.Subject;
 import com.github.ltprc.entity.game.Game;
+import com.github.ltprc.entity.subject.Subject;
 import com.github.ltprc.util.ServerUtil;
 
 @RestController

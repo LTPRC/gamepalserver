@@ -1,4 +1,4 @@
-package com.github.ltprc.entity;
+package com.github.ltprc.entity.subject;
 
 import org.springframework.stereotype.Component;
 

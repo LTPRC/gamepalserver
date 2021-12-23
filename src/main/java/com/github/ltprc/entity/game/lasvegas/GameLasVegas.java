@@ -2,8 +2,8 @@ package com.github.ltprc.entity.game.lasvegas;
 
 import org.springframework.stereotype.Component;
 
-import com.github.ltprc.entity.Subject;
 import com.github.ltprc.entity.game.Game;
+import com.github.ltprc.entity.subject.Subject;
 
 @Component
 public class GameLasVegas extends Game {

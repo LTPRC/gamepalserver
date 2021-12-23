@@ -11,10 +11,12 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.lang.NonNull;
 
-import com.github.ltprc.entity.LasVegas;
 import com.github.ltprc.entity.Player;
 import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.Subject;
+import com.github.ltprc.entity.subject.LasVegas;
+import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.exception.BusinessException;
+import com.github.ltprc.exception.ExceptionConstant;
 
 public class ServerUtil {
 
@@ -39,11 +41,16 @@ public class ServerUtil {
      * Initialization
      */
     static {
-        addSubject(LasVegas.class);
-        Subject subject = getSubject(LasVegas.class);
-        Room room = new Room();
-        room.setName("test_room");
-        subject.addRoom(room);
+        try {
+            addSubject(LasVegas.class);
+            Subject subject = getSubject(LasVegas.class);
+            Room room = new Room();
+            room.setName("test_room");
+            subject.addRoom(room);
+        } catch (BusinessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public static int getOnline() {
@@ -67,7 +74,7 @@ public class ServerUtil {
         return playerMap;
     }
 
-    public static boolean isLoggedIn(HttpServletRequest request) {
+    public static boolean isLoggedIn(@NonNull HttpServletRequest request) throws BusinessException {
         HttpSession session = request.getSession(false);
         return null != session && sessionMap.containsKey(session.getId());
     }
@@ -75,22 +82,29 @@ public class ServerUtil {
     /**
      * One instance per subject class.
      * @param subject
+     * @throws IllegalAccessException 
+     * @throws InstantiationException 
      */
-    public static boolean addSubject(Class subjectClass) {
-        if (null == subjectClass || !Subject.class.isAssignableFrom(subjectClass)) {
-            return false;
+    public static boolean addSubject(@NonNull Class subjectClass) throws BusinessException {
+        if (!Subject.class.isAssignableFrom(subjectClass)) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1002);
         }
         for (Subject existedSubject : subjectList) {
             if (existedSubject.getClass().equals(subjectClass)) {
+                //Subject is already added.
                 return false;
             }
         }
         try {
             subjectList.add((Subject) subjectClass.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return false;
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1004);
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1004);
         }
         return true;
     }
@@ -99,9 +113,9 @@ public class ServerUtil {
      * One instance per subject class.
      * @param subject
      */
-    public static boolean removeSubject(Class subjectClass) {
-        if (null == subjectClass || !Subject.class.isAssignableFrom(subjectClass)) {
-            return false;
+    public static boolean removeSubject(@NonNull Class subjectClass) throws BusinessException {
+        if (!Subject.class.isAssignableFrom(subjectClass)) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1002);
         }
         for (int i = 0; i < subjectList.size(); i++) {
             if (subjectList.get(i).getClass().equals(subjectClass)) {
@@ -109,36 +123,44 @@ public class ServerUtil {
                 return true;
             }
         }
+        //Subject is not found.
         return false;
     }
 
-    public static Subject getSubject(Class subjectClass) {
+    public static Subject getSubject(@NonNull Class subjectClass) throws BusinessException {
         for (int i = 0; i < subjectList.size(); i++) {
             if (subjectList.get(i).getClass().equals(subjectClass)) {
                 return subjectList.get(i);
             }
         }
-        //Error
-        return null;
+        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 
-    public static boolean registerPlayer(Player player) {
-        if (null == player || null == player.getName() || playerMap.containsKey(player.getName()) 
-                || playerMap.size() >= MAX_PLAYER_NUMBER) {
+    public static boolean registerPlayer(@NonNull Player player) {
+
+        if (playerMap.containsKey(player.getName())) {
+            //Already registered
+            return true;
+        }
+        if (playerMap.size() >= MAX_PLAYER_NUMBER) {
+            //Lobby is full
             return false;
         }
         playerMap.put(player.getName(), player);
         return true;
     }
 
-    public static boolean deletePlayer(Player player) {
-        if (null == player || null == player.getName() || !playerMap.containsKey(player.getName())) {
+    public static boolean deletePlayer(@NonNull String playerName) {
+        if (!playerMap.containsKey(playerName)) {
             return false;
         }
-        playerMap.remove(player.getName());
-        HttpSession httpSession = player.getHttpSession();
-        if (null != httpSession) {
-            httpSession.setAttribute("player", null);
+        playerMap.remove(playerName);
+        Player player = playerMap.get(playerName);
+        if (null != player) {
+            HttpSession httpSession = player.getHttpSession();
+            if (null != httpSession) {
+                httpSession.setAttribute("player", null);
+            }
         }
         return true;
     }

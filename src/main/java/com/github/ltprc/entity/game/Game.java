@@ -8,7 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Subject;
+import com.github.ltprc.entity.subject.Subject;
 
 @Component
 public abstract class Game {
@@ -83,7 +83,7 @@ public abstract class Game {
         this.notReadyplayerNameSet = notReadyplayerNameSet;
     }
 
-    public boolean addPlayer(Player player) {
+    public boolean addPlayer(@NonNull Player player) {
         if (playerNameSet.size() >= subject.getMaxPlayerNum()
                 || playerNameSet.contains(player.getName()) || status != STATUS_READY) {
             return false;
