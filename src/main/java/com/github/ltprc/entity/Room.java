@@ -2,6 +2,8 @@ package com.github.ltprc.entity;
 
 import org.springframework.stereotype.Component;
 
+import com.github.ltprc.entity.game.Game;
+import com.github.ltprc.entity.game.lasvegas.GameLasVegas;
 import com.github.ltprc.util.ServerUtil;
 
 @Component
