@@ -28,7 +28,7 @@ public abstract class Game {
     private static final int STATUS_FINISHED = 3;
 
     private String name;
-    private Subject subject;
+    private Class<Subject> subjectClass;
     private int status = STATUS_READY;
     @NonNull
     private Set<String> playerNameSet = new LinkedHashSet<>();
@@ -38,8 +38,8 @@ public abstract class Game {
         
     }
 
-    public Game(Subject subject, String name) {
-        this.subject = subject;
+    public Game(Class<Subject> subjectClass, String name) {
+        this.setSubjectClass(subjectClass);
         this.name = name;
     }
 
@@ -51,12 +51,12 @@ public abstract class Game {
         this.name = name;
     }
 
-    public Subject getSubject() {
-        return subject;
+    public Class<Subject> getSubjectClass() {
+        return subjectClass;
     }
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
+    public void setSubjectClass(Class<Subject> subjectClass) {
+        this.subjectClass = subjectClass;
     }
 
     public int getStatus() {
@@ -84,7 +84,7 @@ public abstract class Game {
     }
 
     public boolean addPlayer(@NonNull Player player) {
-        if (playerNameSet.size() >= subject.getMaxPlayerNum()
+        if (playerNameSet.size() >= Subject.getMaxPlayerNum(subjectClass)
                 || playerNameSet.contains(player.getName()) || status != STATUS_READY) {
             return false;
         }
@@ -119,9 +119,10 @@ public abstract class Game {
     }
 
     public boolean startGame() {
-        if (playerNameSet.size() < subject.getMinPlayerNum() || !notReadyplayerNameSet.isEmpty()) {
+        if (playerNameSet.size() < Subject.getMinPlayerNum(subjectClass) || !notReadyplayerNameSet.isEmpty()) {
             return false;
         }
+        status = STATUS_RUNNING;
         return true;
     }
 }

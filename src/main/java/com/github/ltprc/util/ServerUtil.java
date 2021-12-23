@@ -33,7 +33,7 @@ public class ServerUtil {
      * Business Components
      */
     @NonNull
-    private static List<Subject> subjectList = new ArrayList<>();
+    private static List<Class<Subject>> subjectList = new ArrayList<>();
     @NonNull
     private static Map<String, Player> playerMap = new ConcurrentHashMap<>();
 
@@ -43,10 +43,9 @@ public class ServerUtil {
     static {
         try {
             addSubject(LasVegas.class);
-            Subject subject = getSubject(LasVegas.class);
             Room room = new Room();
             room.setName("test_room");
-            subject.addRoom(room);
+            LasVegas.addRoom(room);
         } catch (BusinessException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -66,7 +65,7 @@ public class ServerUtil {
         return sessionMap;
     }
 
-    public static List<Subject> getSubjectList() {
+    public static List<Class<Subject>> getSubjectList() {
         return subjectList;
     }
 
@@ -79,61 +78,40 @@ public class ServerUtil {
         return null != session && sessionMap.containsKey(session.getId());
     }
 
-    /**
-     * One instance per subject class.
-     * @param subject
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
-     */
-    public static boolean addSubject(@NonNull Class subjectClass) throws BusinessException {
+    public static boolean hasSubject(@NonNull Class subjectClass) throws BusinessException {
         if (!Subject.class.isAssignableFrom(subjectClass)) {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1002);
         }
-        for (Subject existedSubject : subjectList) {
-            if (existedSubject.getClass().equals(subjectClass)) {
-                //Subject is already added.
-                return false;
-            }
+        return subjectList.contains(subjectClass);
+    }
+
+
+    public static boolean addSubject(@NonNull Class subjectClass) throws BusinessException {
+        if (hasSubject(subjectClass)) {
+            //Subject is already added.
+            return false;
         }
-        try {
-            subjectList.add((Subject) subjectClass.newInstance());
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new BusinessException(ExceptionConstant.ERROR_CODE_1004);
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new BusinessException(ExceptionConstant.ERROR_CODE_1004);
-        }
+        subjectList.add(subjectClass);
         return true;
     }
 
     /**
-     * One instance per subject class.
-     * @param subject
+     * Only allows deleting the last element of subjectList.
+     * @param subjectClass
+     * @return
+     * @throws BusinessException
      */
     public static boolean removeSubject(@NonNull Class subjectClass) throws BusinessException {
-        if (!Subject.class.isAssignableFrom(subjectClass)) {
-            throw new BusinessException(ExceptionConstant.ERROR_CODE_1002);
+        if (!hasSubject(subjectClass)) {
+            //Subject is not found.
+            return false;
+        } else if (subjectClass.equals(subjectList.get(subjectList.size() - 1))) {
+            subjectList.remove(subjectClass);
+            return true;
+        } else {
+            //Not allowed
+            return false;
         }
-        for (int i = 0; i < subjectList.size(); i++) {
-            if (subjectList.get(i).getClass().equals(subjectClass)) {
-                subjectList.remove(i);
-                return true;
-            }
-        }
-        //Subject is not found.
-        return false;
-    }
-
-    public static Subject getSubject(@NonNull Class subjectClass) throws BusinessException {
-        for (int i = 0; i < subjectList.size(); i++) {
-            if (subjectList.get(i).getClass().equals(subjectClass)) {
-                return subjectList.get(i);
-            }
-        }
-        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 
     public static boolean registerPlayer(@NonNull Player player) {

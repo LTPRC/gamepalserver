@@ -8,11 +8,14 @@ import com.github.ltprc.entity.subject.Subject;
 @Component
 public class GameLasVegas extends Game {
 
+    private int round = 0;
+    private int turn = 0;
+
     public GameLasVegas() {
         super();
     }
 
-    public GameLasVegas(Subject subject, String name) {
-        super(subject, name);
+    public GameLasVegas(Class<Subject> subjectClass, String name) {
+        super(subjectClass, name);
     }
 }

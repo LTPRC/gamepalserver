@@ -25,8 +25,10 @@ public class MyHttpSessionListener implements HttpSessionListener {
          * Log out the player.
          */
         Player player = (Player) httpSession.getAttribute("player");
-        player.setHttpSession(null);
-        httpSession.setAttribute("player", null);
+        if (null != player) {
+            player.setHttpSession(null);
+            httpSession.setAttribute("player", null);
+        }
         ServerUtil.getSessionMap().remove(se.getSession().getId());
     }
 }

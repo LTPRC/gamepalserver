@@ -7,58 +7,60 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.github.ltprc.entity.Room;
+import com.github.ltprc.exception.BusinessException;
+import com.github.ltprc.exception.ExceptionConstant;
 
 @Component
 public abstract class Subject {
 
-    private String name;
+    private static String name;
     @NonNull
-    private List<Room> roomList = new ArrayList<>();
-    private int minPlayerNum = 1;
-    private int maxPlayerNum = 1;
-    private int maxRoomNum = 100;
+    private static List<Room> roomList = new ArrayList<>();
+    private static int minPlayerNum = 1;
+    private static int maxPlayerNum = 1;
+    private static int maxRoomNum = 100;
 
-    public String getName() {
+    public static String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public static void setName(String name) {
+        Subject.name = name;
     }
 
-    public List<Room> getRoomList() {
+    public static List<Room> getRoomList() {
         return roomList;
     }
 
-    public void setRoomList(List<Room> roomList) {
-        this.roomList = roomList;
+    public static void setRoomList(List<Room> roomList) {
+        Subject.roomList = roomList;
     }
 
-    public int getMinPlayerNum() {
+    public static int getMinPlayerNum() {
         return minPlayerNum;
     }
 
-    public void setMinPlayerNum(int minPlayerNum) {
-        this.minPlayerNum = minPlayerNum;
+    public static void setMinPlayerNum(int minPlayerNum) {
+        Subject.minPlayerNum = minPlayerNum;
     }
 
-    public int getMaxPlayerNum() {
+    public static int getMaxPlayerNum() {
         return maxPlayerNum;
     }
 
-    public void setMaxPlayerNum(int maxPlayerNum) {
-        this.maxPlayerNum = maxPlayerNum;
+    public static void setMaxPlayerNum(int maxPlayerNum) {
+        Subject.maxPlayerNum = maxPlayerNum;
     }
 
-    public int getMaxRoomNum() {
+    public static int getMaxRoomNum() {
         return maxRoomNum;
     }
 
-    public void setMaxRoomNum(int maxRoomNum) {
-        this.maxRoomNum = maxRoomNum;
+    public static void setMaxRoomNum(int maxRoomNum) {
+        Subject.maxRoomNum = maxRoomNum;
     }
 
-    public boolean addRoom(@NonNull Room room) {
+    public static boolean addRoom(@NonNull Room room) {
         if (roomList.size() >= maxRoomNum) {
             return false;
         }
@@ -66,11 +68,39 @@ public abstract class Subject {
         return true;
     }
 
-    public boolean removeRoom(int index) {
+    public static boolean removeRoom(int index) {
         if (roomList.isEmpty() || index < 0 || index >= maxRoomNum) {
             return false;
         }
         roomList.remove(index);
         return true;
+    }
+
+    public static String getName(Class<Subject> subjectClass) throws BusinessException {
+        if (subjectClass.equals(LasVegas.class)) {
+            return LasVegas.getName();
+        }
+        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
+    }
+
+    public static List<Room> getRoomList(Class<Subject> subjectClass) throws BusinessException {
+        if (subjectClass.equals(LasVegas.class)) {
+            return LasVegas.getRoomList();
+        }
+        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
+    }
+
+    public static int getMaxPlayerNum(Class<Subject> subjectClass) throws BusinessException {
+        if (subjectClass.equals(LasVegas.class)) {
+            return LasVegas.getMaxPlayerNum();
+        }
+        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
+    }
+
+    public static int getMinPlayerNum(Class<Subject> subjectClass) throws BusinessException {
+        if (subjectClass.equals(LasVegas.class)) {
+            return LasVegas.getMinPlayerNum();
+        }
+        throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 }

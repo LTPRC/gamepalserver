@@ -17,6 +17,8 @@ import com.github.ltprc.entity.Player;
 import com.github.ltprc.entity.Room;
 import com.github.ltprc.entity.game.Game;
 import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.exception.BusinessException;
+import com.github.ltprc.exception.ExceptionConstant;
 import com.github.ltprc.util.ServerUtil;
 
 @RestController
@@ -25,7 +27,7 @@ public class LobbyController {
     @RequestMapping("/lobby")
     @ResponseBody
     public String lobby(HttpServletRequest request) {
-        List<Subject> subjectList = ServerUtil.getSubjectList();
+        List<Class<Subject>> subjectList = ServerUtil.getSubjectList();
         StringBuilder sb = new StringBuilder();
         sb.append("当前在线人数：" + ServerUtil.getOnline() + "人 ");
         sb.append("There ");
@@ -37,7 +39,7 @@ public class LobbyController {
             sb.append(":");
             sb.append(subjectList.get(index).getName());
             sb.append("(room*");
-            sb.append(subjectList.get(index).getRoomList().size());
+            sb.append(Subject.getRoomList(subjectList.get(index)).size());
             sb.append(") ");
         });
         return sb.toString();
@@ -57,19 +59,13 @@ public class LobbyController {
 
     @RequestMapping("/lobby/{subjectId}")
     @ResponseBody
-    public String subject(HttpServletRequest request, @PathVariable("subjectId") String subjectId) {
-        if (!StringUtils.isNumeric(subjectId)) {
-            return "This subject id is illegal!";
-        }
-        int subjectIndex = Integer.valueOf(subjectId);
-        List<Subject> subjectList = ServerUtil.getSubjectList();
-        if (subjectIndex < 0 || subjectIndex >= subjectList.size()) {
-            return "This subject does not exist!";
-        }
-        Subject subject = subjectList.get(subjectIndex);
-        List<Room> roomList = subject.getRoomList();
+    public String subject(HttpServletRequest request, @PathVariable("subjectId") String subjectId)
+            throws BusinessException {
+        Class subjectClass = getSubject(subjectId);
+        List<Room> roomList = Subject.getRoomList(subjectClass);
+
         StringBuilder sb = new StringBuilder();
-        sb.append("Subject\"" + subject.getName() + "\" ");
+        sb.append("Subject\"" + Subject.getName(subjectClass) + "\" ");
         sb.append("Room#:" + roomList.size() + " ");
         sb.append("There ");
         sb.append(roomList.size() <= 1 ? "is " : "are ");
@@ -84,64 +80,56 @@ public class LobbyController {
         return sb.toString();
     }
 
+    private Class<Subject> getSubject(String subjectId) throws BusinessException {
+        if (!StringUtils.isNumeric(subjectId)) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1007);
+        }
+        int subjectIndex = Integer.valueOf(subjectId);
+        List<Class<Subject>> subjectList = ServerUtil.getSubjectList();
+        if (subjectIndex < 0 || subjectIndex >= subjectList.size()) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1008);
+        }
+        return subjectList.get(subjectIndex);
+    }
+
     @RequestMapping("/lobby/{subjectId}/{roomId}")
     @ResponseBody
     public String room(HttpServletRequest request, @PathVariable("subjectId") String subjectId,
-            @PathVariable("roomId") String roomId) {
-        if (!StringUtils.isNumeric(subjectId)) {
-            return "This subject id is illegal!";
-        }
-        int subjectIndex = Integer.valueOf(subjectId);
-        List<Subject> subjectList = ServerUtil.getSubjectList();
-        if (subjectIndex < 0 || subjectIndex >= subjectList.size()) {
-            return "This subject does not exist!";
-        }
-        Subject subject = subjectList.get(subjectIndex);
-
-        if (!StringUtils.isNumeric(roomId)) {
-            return "This subject id is illegal!";
-        }
-        int roomIndex = Integer.valueOf(roomId);
-        List<Room> roomList = subject.getRoomList();
-        if (roomIndex < 0 || roomIndex >= roomList.size()) {
-            return "This room does not exist!";
-        }
-        Room room = roomList.get(roomIndex);
+            @PathVariable("roomId") String roomId) throws BusinessException {
+        Class subjectClass = getSubject(subjectId);
+        Room room = getRoom(subjectId, roomId);
+        Game game = room.getGame();
 
         StringBuilder sb = new StringBuilder();
         sb.append("Room\"" + room.getName() + "\" ");
-        Game game = room.getGame();
         if (null == game) {
             sb.append("No game information.");
         } else {
-            sb.append("Game\"" + game.getName() + "\"(" + game.getPlayerNameSet().size() + "/" + subject.getMaxPlayerNum() + ") ");
+            sb.append("Game\"" + game.getName() + "\"(" + game.getPlayerNameSet().size() + "/"
+                    + Subject.getMaxPlayerNum(subjectClass) + ") ");
         }
         return sb.toString();
+    }
+
+    private Room getRoom(String subjectId, String roomId) throws BusinessException {
+        Class subjectClass = getSubject(subjectId);
+        if (!StringUtils.isNumeric(roomId)) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1009);
+        }
+        int roomIndex = Integer.valueOf(roomId);
+        List<Room> roomList = Subject.getRoomList(subjectClass);
+        if (roomIndex < 0 || roomIndex >= roomList.size()) {
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1010);
+        }
+        return roomList.get(roomIndex);
     }
 
     @RequestMapping("/lobby/{subjectId}/{roomId}/game")
     @ResponseBody
     public String game(HttpServletRequest request, @PathVariable("subjectId") String subjectId,
             @PathVariable("roomId") String roomId) {
-        if (!StringUtils.isNumeric(subjectId)) {
-            return "This subject id is illegal!";
-        }
-        int subjectIndex = Integer.valueOf(subjectId);
-        List<Subject> subjectList = ServerUtil.getSubjectList();
-        if (subjectIndex < 0 || subjectIndex >= subjectList.size()) {
-            return "This subject does not exist!";
-        }
-        Subject subject = subjectList.get(subjectIndex);
-
-        if (!StringUtils.isNumeric(roomId)) {
-            return "This subject id is illegal!";
-        }
-        int roomIndex = Integer.valueOf(roomId);
-        List<Room> roomList = subject.getRoomList();
-        if (roomIndex < 0 || roomIndex >= roomList.size()) {
-            return "This room does not exist!";
-        }
-        Room room = roomList.get(roomIndex);
+        Class subjectClass = getSubject(subjectId);
+        Room room = getRoom(subjectId, roomId);
 
         /**
          * Create game
@@ -149,10 +137,10 @@ public class LobbyController {
         StringBuilder sb = new StringBuilder();
         Game game = room.getGame();
         if (null == game) {
-            room.createGame(subjectIndex, "testgamename ");
+            room.createGame(subjectClass, "testgamename ");
             game = room.getGame();
         }
-        
+
         /**
          * Enter game
          */
@@ -161,15 +149,17 @@ public class LobbyController {
         HttpSession session = request.getSession(false);
         Player player = (Player) session.getAttribute("player");
         if (playerNameSet.contains(player.getName())) {
-            sb.append("You have already entered. ");
-        } else if (playerNameSet.size() < subject.getMaxPlayerNum()) {
+//            sb.append("You have already entered. ");
+        } else if (playerNameSet.size() < Subject.getMaxPlayerNum(subjectClass)) {
             playerNameSet.add(player.getName());
             notReadyplayerNameSet.add(player.getName());
-            sb.append("You have entered. ");
+//            sb.append("You have entered. ");
         } else {
-            sb.append("You have not entered since the room is full. ");
+//            sb.append("You have not entered since the room is full. ");
+            throw new BusinessException(ExceptionConstant.ERROR_CODE_1011);
         }
-        sb.append("Game\"" + game.getName() + "\"(" + playerNameSet.size() + "/" + subject.getMaxPlayerNum() + ") ");
+        sb.append("Game\"" + game.getName() + "\"(" + playerNameSet.size() + "/" + Subject.getMaxPlayerNum(subjectClass)
+                + ") ");
         IntStream.range(0, playerNameSet.size()).forEach(index -> {
             sb.append(index);
             sb.append(":");
