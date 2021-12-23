@@ -11,7 +11,6 @@ public class Player {
     private HttpSession httpSession;
 
     public Player() {
-        
     }
 
     public Player(String name, HttpSession httpSession) {

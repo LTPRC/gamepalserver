@@ -55,4 +55,20 @@ public abstract class Subject {
     public void setMaxRoomNum(int maxRoomNum) {
         this.maxRoomNum = maxRoomNum;
     }
+
+    public boolean addRoom(Room room) {
+        if (null == room || roomList.size() >= maxRoomNum) {
+            return false;
+        }
+        roomList.add(room);
+        return true;
+    }
+
+    public boolean removeRoom(int index) {
+        if (roomList.isEmpty() || index < 0 || index >= maxRoomNum) {
+            return false;
+        }
+        roomList.remove(index);
+        return true;
+    }
 }

@@ -11,10 +11,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.lang.NonNull;
 
-import com.github.ltprc.entity.Game;
 import com.github.ltprc.entity.LasVegas;
 import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Room;
 import com.github.ltprc.entity.Subject;
 
 public class ServerUtil {
@@ -105,22 +103,6 @@ public class ServerUtil {
         }
         return false;
     }
-    
-    public static boolean addRoom(Subject subject, Room room) {
-        if (null == room || null == subject || subject.getRoomList().size() >= subject.getMaxRoomNum()) {
-            return false;
-        }
-        subject.getRoomList().add(room);
-        return true;
-    }
-    
-    public static boolean removeRoom(Subject subject, int index) {
-        if (null == subject || subject.getRoomList().isEmpty() || index < 0 || index >= subject.getMaxRoomNum()) {
-            return false;
-        }
-        subject.getRoomList().remove(index);
-        return true;
-    }
 
     public static boolean registerPlayer(Player player) {
         if (null == player || null == player.getName() || playerMap.containsKey(player.getName()) 
@@ -140,25 +122,6 @@ public class ServerUtil {
         if (null != httpSession) {
             httpSession.setAttribute("player", null);
         }
-        return true;
-    }
-
-    public static boolean addPlayer(Game game, Player player) {
-        if (null == player || null == game || null == game.getPlayerNameSet() 
-                || game.getPlayerNameSet().size() >= game.getSubject().getMaxPlayerNum()
-                || game.getPlayerNameSet().contains(player.getName())) {
-            return false;
-        }
-        game.getPlayerNameSet().add(player.getName());
-        return true;
-    }
-
-    public static boolean removePlayer(Game game, Player player) {
-        if (null == player || null == game || null == game.getPlayerNameSet() 
-                || !game.getPlayerNameSet().contains(player.getName())) {
-            return false;
-        }
-        game.getPlayerNameSet().remove(player.getName());
         return true;
     }
 }
