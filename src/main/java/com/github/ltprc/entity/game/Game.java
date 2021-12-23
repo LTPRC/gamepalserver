@@ -34,6 +34,15 @@ public abstract class Game {
     private Set<String> playerNameSet = new LinkedHashSet<>();
     private Set<String> notReadyplayerNameSet = new HashSet<>();
 
+    public Game() {
+        
+    }
+
+    public Game(Subject subject, String name) {
+        this.subject = subject;
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -64,6 +73,14 @@ public abstract class Game {
 
     public void setPlayerNameSet(Set<String> playerNameSet) {
         this.playerNameSet = playerNameSet;
+    }
+
+    public Set<String> getNotReadyplayerNameSet() {
+        return notReadyplayerNameSet;
+    }
+
+    public void setNotReadyplayerNameSet(Set<String> notReadyplayerNameSet) {
+        this.notReadyplayerNameSet = notReadyplayerNameSet;
     }
 
     public boolean addPlayer(Player player) {

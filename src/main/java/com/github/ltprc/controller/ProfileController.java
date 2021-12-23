@@ -13,14 +13,22 @@ import com.github.ltprc.util.ServerUtil;
 public class ProfileController {
 
     @RequestMapping("login")
-    public String login(HttpServletRequest request){
+    public String login(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
         HttpSession session = request.getSession(false);
         if (null == session) {
             session = request.getSession(true);
-            return "Session:" + session.getId() + " has been successfully logged in.";
+            Player player = (Player) session.getAttribute("player");
+            if (null == player || null == player.getHttpSession() || player.getHttpSession() != session) {
+                player = new Player(session.getId(), session);
+                session.setAttribute("player", player);
+                ServerUtil.registerPlayer(player);
+            }
+            sb.append("Session:" + session.getId() + " has been successfully logged in.");
         } else {
-            return "Session:" + session.getId() + " has already been logged in.";
+            sb.append("Session:" + session.getId() + " has already been logged in.");
         }
+        return sb.toString();
     }
 
     @RequestMapping("profile")
@@ -30,11 +38,6 @@ public class ProfileController {
         }
         HttpSession session = request.getSession(false);
         Player player = (Player) session.getAttribute("player");
-        if (null == player || null == player.getHttpSession() || player.getHttpSession() != session) {
-            player = new Player(session.getId(), session);
-            session.setAttribute("player", player);
-            ServerUtil.registerPlayer(player);
-        }
         return "Player:" + player.getName();
     }
 }

@@ -12,7 +12,7 @@ public class GameLasVegas extends Game {
         super();
     }
 
-    public GameLasVegas(Subject subject) {
-        setSubject(subject);
+    public GameLasVegas(Subject subject, String name) {
+        super(subject, name);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 
 import com.github.ltprc.entity.LasVegas;
 import com.github.ltprc.entity.Player;
+import com.github.ltprc.entity.Room;
 import com.github.ltprc.entity.Subject;
 
 public class ServerUtil {
@@ -34,8 +35,15 @@ public class ServerUtil {
     @NonNull
     private static Map<String, Player> playerMap = new ConcurrentHashMap<>();
 
+    /**
+     * Initialization
+     */
     static {
         addSubject(LasVegas.class);
+        Subject subject = getSubject(LasVegas.class);
+        Room room = new Room();
+        room.setName("test_room");
+        subject.addRoom(room);
     }
 
     public static int getOnline() {
@@ -59,7 +67,7 @@ public class ServerUtil {
         return playerMap;
     }
 
-    public static boolean isLoggedIn(HttpServletRequest request){
+    public static boolean isLoggedIn(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         return null != session && sessionMap.containsKey(session.getId());
     }
@@ -102,6 +110,16 @@ public class ServerUtil {
             }
         }
         return false;
+    }
+
+    public static Subject getSubject(Class subjectClass) {
+        for (int i = 0; i < subjectList.size(); i++) {
+            if (subjectList.get(i).getClass().equals(subjectClass)) {
+                return subjectList.get(i);
+            }
+        }
+        //Error
+        return null;
     }
 
     public static boolean registerPlayer(Player player) {

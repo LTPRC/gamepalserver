@@ -28,12 +28,12 @@ public class Room {
         this.game = game;
     }
 
-    public boolean createGame(int subjectIndex) {
-        if (null != game || null == ServerUtil.getSubjectList().get(subjectIndex)) {
+    public boolean createGame(int subjectIndex, String name) {
+        if (null != game || null == name || null == ServerUtil.getSubjectList().get(subjectIndex)) {
             return false;
         }
         if (ServerUtil.getSubjectList().get(subjectIndex).getClass().equals(LasVegas.class)) {
-            game = new GameLasVegas(ServerUtil.getSubjectList().get(subjectIndex));
+            game = new GameLasVegas(ServerUtil.getSubjectList().get(subjectIndex), name);
             return true;
         }
         return false;
