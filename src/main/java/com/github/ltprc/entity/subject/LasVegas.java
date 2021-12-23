@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class LasVegas extends Subject {
 
-    private static final int CASINO_NUM = 6;
-    private static final int DICE_NUM_PER_PLAYER = 8;
+    public static final int CASINO_NUM = 6;
+    public static final int DICE_NUM_PER_PLAYER = 8;
     //value (Unit:W) and its number
-    private static final Map<Integer, Integer> BANKNOTE_MAP = new HashMap<>();
-    private static final int BANKNOTE_VALUE_PER_CASINO = 5;
+    public static final Map<Integer, Integer> BANKNOTE_MAP = new HashMap<>();
+    public static final int BANKNOTE_VALUE_PER_CASINO = 5;
 
     public LasVegas() {
         super();
