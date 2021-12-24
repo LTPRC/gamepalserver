@@ -23,4 +23,18 @@ public class ExceptionConstant {
     public static final String ERROR_MSG_1010 = "Non-existed room.";
     public static final String ERROR_CODE_1011 = "1011";
     public static final String ERROR_MSG_1011 = "Game is full.";
+    public static final String ERROR_CODE_1012 = "1012";
+    public static final String ERROR_MSG_1012 = "Wrong game status.";
+    public static final String ERROR_CODE_1013 = "1013";
+    public static final String ERROR_MSG_1013 = "Wrong player.";
+
+    /**
+     * Las Vegas
+     */
+    public static final String ERROR_CODE_LV01 = "LV01";
+    public static final String ERROR_MSG_LV01 = "No enough banknote.";
+    public static final String ERROR_CODE_LV02 = "LV02";
+    public static final String ERROR_MSG_LV02 = "Non-existed casino.";
+    public static final String ERROR_CODE_LV03 = "LV03";
+    public static final String ERROR_MSG_LV03 = "No enough dice.";
 }

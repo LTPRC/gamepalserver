@@ -21,11 +21,11 @@ public abstract class Game {
      * 2  paused
      * 3  finished
      */
-    private static final int STATUS_ERROR = -1;
-    private static final int STATUS_READY = 0;
-    private static final int STATUS_RUNNING = 1;
-    private static final int STATUS_PAUSED = 2;
-    private static final int STATUS_FINISHED = 3;
+    public static final int STATUS_ERROR = -1;
+    public static final int STATUS_READY = 0;
+    public static final int STATUS_RUNNING = 1;
+    public static final int STATUS_PAUSED = 2;
+    public static final int STATUS_FINISHED = 3;
 
     private String name;
     private Class<Subject> subjectClass;
@@ -124,5 +124,9 @@ public abstract class Game {
         }
         status = STATUS_RUNNING;
         return true;
+    }
+
+    public void endGame() {
+        status = STATUS_FINISHED;
     }
 }
