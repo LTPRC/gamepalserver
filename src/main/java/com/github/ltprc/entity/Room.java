@@ -34,7 +34,7 @@ public class Room {
         if (null != game) {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1006);
         }
-        if (Server.hasSubject(subjectClass)) {
+        if (!Server.hasSubject(subjectClass)) {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
         }
         if (subjectClass.equals(SubjectLasVegas.class)) {
