@@ -1,4 +1,4 @@
-package com.github.ltprc.entity.game.lasvegas;
+package com.github.ltprc.entity.lasvegas;
 
 import java.util.HashMap;
 import java.util.Map;

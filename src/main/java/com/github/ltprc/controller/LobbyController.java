@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.ltprc.entity.Player;
 import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.game.Game;
-import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.entity.Server;
+import com.github.ltprc.entity.Game;
+import com.github.ltprc.entity.Subject;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
-import com.github.ltprc.util.ServerUtil;
 
 @RestController
 public class LobbyController {
@@ -27,9 +27,9 @@ public class LobbyController {
     @RequestMapping("/lobby")
     @ResponseBody
     public String lobby(HttpServletRequest request) {
-        List<Class<Subject>> subjectList = ServerUtil.getSubjectList();
+        List<Class<Subject>> subjectList = Server.getSubjectList();
         StringBuilder sb = new StringBuilder();
-        sb.append("当前在线人数：" + ServerUtil.getOnline() + "人 ");
+        sb.append("当前在线人数：" + Server.getOnline() + "人 ");
         sb.append("There ");
         sb.append(subjectList.size() <= 1 ? "is " : "are ");
         sb.append(subjectList.size());
@@ -48,13 +48,13 @@ public class LobbyController {
     @RequestMapping("/lobby/player-count")
     @ResponseBody
     public int playerCount(HttpServletRequest request) {
-        return ServerUtil.getPlayerMap().size();
+        return Server.getPlayerMap().size();
     }
 
     @RequestMapping("/lobby/online")
     @ResponseBody
     public int online(HttpServletRequest request) {
-        return ServerUtil.getOnline();
+        return Server.getOnline();
     }
 
     @RequestMapping("/lobby/{subjectId}")
@@ -85,7 +85,7 @@ public class LobbyController {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1007);
         }
         int subjectIndex = Integer.valueOf(subjectId);
-        List<Class<Subject>> subjectList = ServerUtil.getSubjectList();
+        List<Class<Subject>> subjectList = Server.getSubjectList();
         if (subjectIndex < 0 || subjectIndex >= subjectList.size()) {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1008);
         }

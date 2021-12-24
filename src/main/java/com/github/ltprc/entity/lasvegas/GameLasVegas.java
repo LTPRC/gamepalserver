@@ -1,13 +1,12 @@
-package com.github.ltprc.entity.game.lasvegas;
+package com.github.ltprc.entity.lasvegas;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.github.ltprc.entity.game.Game;
-import com.github.ltprc.entity.subject.LasVegas;
-import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.entity.Game;
+import com.github.ltprc.entity.Subject;
 
 @Component
 public class GameLasVegas extends Game {

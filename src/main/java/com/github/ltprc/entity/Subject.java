@@ -1,4 +1,4 @@
-package com.github.ltprc.entity.subject;
+package com.github.ltprc.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.github.ltprc.entity.Room;
+import com.github.ltprc.entity.lasvegas.LasVegas;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
 

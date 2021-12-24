@@ -1,4 +1,4 @@
-package com.github.ltprc.util;
+package com.github.ltprc.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +11,11 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.lang.NonNull;
 
-import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.subject.LasVegas;
-import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.entity.lasvegas.LasVegas;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
 
-public class ServerUtil {
+public class Server {
 
     private static final int MAX_PLAYER_NUMBER = 100;
 

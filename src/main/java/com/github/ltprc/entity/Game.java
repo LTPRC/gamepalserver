@@ -1,4 +1,4 @@
-package com.github.ltprc.entity.game;
+package com.github.ltprc.entity;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -8,7 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.subject.Subject;
+import com.github.ltprc.entity.Subject;
 
 @Component
 public abstract class Game {

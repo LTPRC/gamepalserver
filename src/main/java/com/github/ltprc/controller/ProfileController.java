@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.ltprc.entity.Player;
-import com.github.ltprc.util.ServerUtil;
+import com.github.ltprc.entity.Server;
 
 @RestController
 public class ProfileController {
@@ -22,7 +22,7 @@ public class ProfileController {
             if (null == player || null == player.getHttpSession() || player.getHttpSession() != session) {
                 player = new Player(session.getId(), session);
                 session.setAttribute("player", player);
-                ServerUtil.registerPlayer(player);
+                Server.registerPlayer(player);
             }
             sb.append("Session:" + session.getId() + " has been successfully logged in.");
         } else {
@@ -33,7 +33,7 @@ public class ProfileController {
 
     @RequestMapping("profile")
     public String profile(HttpServletRequest request) {
-        if (!ServerUtil.isLoggedIn(request)) {
+        if (!Server.isLoggedIn(request)) {
             return "You are not logged in!";
         }
         HttpSession session = request.getSession(false);

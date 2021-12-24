@@ -1,9 +1,11 @@
-package com.github.ltprc.entity.subject;
+package com.github.ltprc.entity.lasvegas;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
+
+import com.github.ltprc.entity.Subject;
 
 @Component
 public class LasVegas extends Subject {

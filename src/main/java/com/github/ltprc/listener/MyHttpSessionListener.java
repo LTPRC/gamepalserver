@@ -5,21 +5,21 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import com.github.ltprc.entity.Player;
-import com.github.ltprc.util.ServerUtil;
+import com.github.ltprc.entity.Server;
 
 public class MyHttpSessionListener implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         System.out.println("创建session");
-        ServerUtil.addOnline(1);
-        ServerUtil.getSessionMap().put(se.getSession().getId(), se.getSession());
+        Server.addOnline(1);
+        Server.getSessionMap().put(se.getSession().getId(), se.getSession());
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         System.out.println("销毁session");
-        ServerUtil.addOnline(-1);
+        Server.addOnline(-1);
         HttpSession httpSession = se.getSession();
         /**
          * Log out the player.
@@ -29,6 +29,6 @@ public class MyHttpSessionListener implements HttpSessionListener {
             player.setHttpSession(null);
             httpSession.setAttribute("player", null);
         }
-        ServerUtil.getSessionMap().remove(se.getSession().getId());
+        Server.getSessionMap().remove(se.getSession().getId());
     }
 }
