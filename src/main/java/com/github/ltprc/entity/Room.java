@@ -3,7 +3,7 @@ package com.github.ltprc.entity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import com.github.ltprc.entity.lasvegas.LasVegas;
+import com.github.ltprc.entity.lasvegas.SubjectLasVegas;
 import com.github.ltprc.entity.lasvegas.GameLasVegas;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
@@ -37,7 +37,7 @@ public class Room {
         if (Server.hasSubject(subjectClass)) {
             throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
         }
-        if (subjectClass.equals(LasVegas.class)) {
+        if (subjectClass.equals(SubjectLasVegas.class)) {
             game = new GameLasVegas(Subject.class, name);
             return true;
         }

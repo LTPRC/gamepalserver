@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.lang.NonNull;
 
-import com.github.ltprc.entity.lasvegas.LasVegas;
+import com.github.ltprc.entity.lasvegas.SubjectLasVegas;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
 
@@ -39,10 +39,10 @@ public class Server {
      */
     static {
         try {
-            addSubject(LasVegas.class);
+            addSubject(SubjectLasVegas.class);
             Room room = new Room();
             room.setName("test_room");
-            LasVegas.addRoom(room);
+            SubjectLasVegas.addRoom(room);
         } catch (BusinessException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

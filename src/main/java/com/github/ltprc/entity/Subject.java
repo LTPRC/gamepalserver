@@ -7,7 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.lasvegas.LasVegas;
+import com.github.ltprc.entity.lasvegas.SubjectLasVegas;
 import com.github.ltprc.exception.BusinessException;
 import com.github.ltprc.exception.ExceptionConstant;
 
@@ -78,29 +78,29 @@ public abstract class Subject {
     }
 
     public static String getName(Class<Subject> subjectClass) throws BusinessException {
-        if (subjectClass.equals(LasVegas.class)) {
-            return LasVegas.getName();
+        if (subjectClass.equals(SubjectLasVegas.class)) {
+            return SubjectLasVegas.getName();
         }
         throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 
     public static List<Room> getRoomList(Class<Subject> subjectClass) throws BusinessException {
-        if (subjectClass.equals(LasVegas.class)) {
-            return LasVegas.getRoomList();
+        if (subjectClass.equals(SubjectLasVegas.class)) {
+            return SubjectLasVegas.getRoomList();
         }
         throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 
     public static int getMaxPlayerNum(Class<Subject> subjectClass) throws BusinessException {
-        if (subjectClass.equals(LasVegas.class)) {
-            return LasVegas.getMaxPlayerNum();
+        if (subjectClass.equals(SubjectLasVegas.class)) {
+            return SubjectLasVegas.getMaxPlayerNum();
         }
         throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
 
     public static int getMinPlayerNum(Class<Subject> subjectClass) throws BusinessException {
-        if (subjectClass.equals(LasVegas.class)) {
-            return LasVegas.getMinPlayerNum();
+        if (subjectClass.equals(SubjectLasVegas.class)) {
+            return SubjectLasVegas.getMinPlayerNum();
         }
         throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
