@@ -1,11 +1,11 @@
-package com.github.ltprc.listener;
+package com.github.ltprc.gamepal.listener;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Server;
+import com.github.ltprc.gamepal.entity.Player;
+import com.github.ltprc.gamepal.entity.Server;
 
 public class MyHttpSessionListener implements HttpSessionListener {
 

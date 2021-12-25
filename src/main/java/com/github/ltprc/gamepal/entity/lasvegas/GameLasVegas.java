@@ -1,4 +1,4 @@
-package com.github.ltprc.entity.lasvegas;
+package com.github.ltprc.gamepal.entity.lasvegas;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +11,10 @@ import java.util.Map.Entry;
 
 import org.springframework.stereotype.Component;
 
-import com.github.ltprc.entity.Game;
-import com.github.ltprc.entity.Subject;
-import com.github.ltprc.exception.BusinessException;
-import com.github.ltprc.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.entity.Subject;
+import com.github.ltprc.gamepal.exception.BusinessException;
+import com.github.ltprc.gamepal.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.entity.Game;
 
 @Component
 public class GameLasVegas extends Game {

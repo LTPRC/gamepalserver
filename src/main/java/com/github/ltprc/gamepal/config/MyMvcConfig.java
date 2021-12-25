@@ -1,4 +1,4 @@
-package com.github.ltprc.config;
+package com.github.ltprc.gamepal.config;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.github.ltprc.listener.MyHttpSessionListener;
+import com.github.ltprc.gamepal.listener.MyHttpSessionListener;
 
 @Configuration
 public class MyMvcConfig implements WebMvcConfigurer {

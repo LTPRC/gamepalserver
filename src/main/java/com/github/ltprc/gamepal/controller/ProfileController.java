@@ -1,4 +1,4 @@
-package com.github.ltprc.controller;
+package com.github.ltprc.gamepal.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -6,8 +6,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Server;
+import com.github.ltprc.gamepal.entity.Player;
+import com.github.ltprc.gamepal.entity.Server;
 
 @RestController
 public class ProfileController {

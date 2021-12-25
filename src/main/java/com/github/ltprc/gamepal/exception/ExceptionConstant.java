@@ -1,4 +1,4 @@
-package com.github.ltprc.exception;
+package com.github.ltprc.gamepal.exception;
 
 public class ExceptionConstant {
     public static final String ERROR_CODE_1001 = "1001";

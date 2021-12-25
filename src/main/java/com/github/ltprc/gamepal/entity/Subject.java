@@ -1,4 +1,4 @@
-package com.github.ltprc.entity;
+package com.github.ltprc.gamepal.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,9 @@ import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.lasvegas.SubjectLasVegas;
-import com.github.ltprc.exception.BusinessException;
-import com.github.ltprc.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.exception.BusinessException;
+import com.github.ltprc.gamepal.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.entity.lasvegas.SubjectLasVegas;
 
 @Component
 public abstract class Subject {

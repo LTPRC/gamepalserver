@@ -1,4 +1,4 @@
-package com.github.ltprc.exception;
+package com.github.ltprc.gamepal.exception;
 
 public class BusinessException extends RuntimeException {
 

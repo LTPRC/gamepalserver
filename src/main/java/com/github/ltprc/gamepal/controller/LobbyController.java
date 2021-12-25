@@ -1,4 +1,4 @@
-package com.github.ltprc.controller;
+package com.github.ltprc.gamepal.controller;
 
 import java.util.List;
 import java.util.Set;
@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.ltprc.entity.Player;
-import com.github.ltprc.entity.Room;
-import com.github.ltprc.entity.Server;
-import com.github.ltprc.entity.Game;
-import com.github.ltprc.entity.Subject;
-import com.github.ltprc.exception.BusinessException;
-import com.github.ltprc.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.entity.Subject;
+import com.github.ltprc.gamepal.exception.BusinessException;
+import com.github.ltprc.gamepal.exception.ExceptionConstant;
+import com.github.ltprc.gamepal.entity.Game;
+import com.github.ltprc.gamepal.entity.Player;
+import com.github.ltprc.gamepal.entity.Room;
+import com.github.ltprc.gamepal.entity.Server;
 
 @RestController
 public class LobbyController {

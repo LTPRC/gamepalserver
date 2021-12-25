@@ -1,4 +1,4 @@
-package com.github.ltprc.annotation;
+package com.github.ltprc.gamepal.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

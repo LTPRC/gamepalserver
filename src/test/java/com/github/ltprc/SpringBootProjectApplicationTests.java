@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.github.ltprc.entity.Person;
+import com.github.ltprc.gamepal.entity.Person;
 
 @SpringBootTest
 class SpringBootProjectApplicationTests {

@@ -1,4 +1,4 @@
-package com.github.ltprc.filter;
+package com.github.ltprc.gamepal.filter;
 
 import java.io.IOException;
 

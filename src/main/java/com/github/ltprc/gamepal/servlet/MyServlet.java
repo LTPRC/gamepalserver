@@ -1,4 +1,4 @@
-package com.github.ltprc.servlet;
+package com.github.ltprc.gamepal.servlet;
 
 import java.io.IOException;
 

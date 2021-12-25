@@ -1,4 +1,4 @@
-package com.github.ltprc.controller;
+package com.github.ltprc.gamepal.controller;
 
 import javax.servlet.http.HttpSession;
 
