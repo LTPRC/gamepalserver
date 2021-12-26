@@ -37,7 +37,7 @@ public class LobbyController {
         IntStream.range(0, subjectList.size()).forEach(index -> {
             sb.append(index);
             sb.append(":");
-            sb.append(subjectList.get(index).getName());
+            sb.append(Subject.getSubjectName(subjectList.get(index)));
             sb.append("(room*");
             sb.append(Subject.getRoomList(subjectList.get(index)).size());
             sb.append(") ");
