@@ -61,11 +61,11 @@ public class LobbyController {
     @ResponseBody
     public String subject(HttpServletRequest request, @PathVariable("subjectId") String subjectId)
             throws BusinessException {
-        Class subjectClass = getSubject(subjectId);
+        Class<Subject> subjectClass = getSubject(subjectId);
         List<Room> roomList = Subject.getRoomList(subjectClass);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Subject\"" + Subject.getName(subjectClass) + "\" ");
+        sb.append("Subject\"" + Subject.getSubjectName(subjectClass) + "\" ");
         sb.append("Room#:" + roomList.size() + " ");
         sb.append("There ");
         sb.append(roomList.size() <= 1 ? "is " : "are ");

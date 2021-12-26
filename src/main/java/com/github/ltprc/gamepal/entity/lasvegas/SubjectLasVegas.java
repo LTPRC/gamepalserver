@@ -19,7 +19,7 @@ public class SubjectLasVegas extends Subject {
 
     public SubjectLasVegas() {
         super();
-        setName("Las Vegas");
+        setSubjectName("Las Vegas");
         setMinPlayerNum(1);
         setMaxPlayerNum(8);
         BANKNOTE_MAP.put(1, 6);

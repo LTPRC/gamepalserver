@@ -13,19 +13,19 @@ import com.github.ltprc.gamepal.entity.lasvegas.SubjectLasVegas;
 @Component
 public abstract class Subject {
 
-    private static String name;
+    private static String subjectName;
     @NonNull
     private static List<Room> roomList = new ArrayList<>();
     private static int minPlayerNum = 1;
     private static int maxPlayerNum = 1;
     private static int maxRoomNum = 100;
 
-    public static String getName() {
-        return name;
+    public static String getSubjectName() {
+        return subjectName;
     }
 
-    public static void setName(String name) {
-        Subject.name = name;
+    public static void setSubjectName(String subjectName) {
+        Subject.subjectName = subjectName;
     }
 
     public static List<Room> getRoomList() {
@@ -76,9 +76,9 @@ public abstract class Subject {
         return true;
     }
 
-    public static String getName(Class<Subject> subjectClass) throws BusinessException {
+    public static String getSubjectName(Class<Subject> subjectClass) throws BusinessException {
         if (subjectClass.equals(SubjectLasVegas.class)) {
-            return SubjectLasVegas.getName();
+            return SubjectLasVegas.getSubjectName();
         }
         throw new BusinessException(ExceptionConstant.ERROR_CODE_1003);
     }
