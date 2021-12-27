@@ -53,6 +53,15 @@ public class Server {
         return online.get();
     }
 
+    public static String[] getOnlinePlayers() {
+        String[] rst = new String[playerMap.entrySet().size()];
+        Object[] players = playerMap.values().toArray();
+        for (int i = 0; i < rst.length; i++) {
+            rst[i] = (String) players[i];
+        }
+        return rst;
+    }
+
     public static void addOnline(int num) {
         System.out.println("addOnline by " + num);
         online.addAndGet(num);
