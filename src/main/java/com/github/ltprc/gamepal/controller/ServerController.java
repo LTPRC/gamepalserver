@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ltprc.gamepal.config.ServerConstant;
 import com.github.ltprc.gamepal.entity.UserInfo;
 import com.github.ltprc.gamepal.repository.UserInfoRepository;
+import com.github.ltprc.gamepal.util.ServerUtil;
 
 @RestController
 @RequestMapping("/v1")
@@ -29,7 +29,7 @@ public class ServerController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public String register(HttpServletRequest request) {
+    public JSONObject register(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
         UserInfo userInfo = new UserInfo();
         String uuid = UUID.randomUUID().toString();
@@ -38,24 +38,19 @@ public class ServerController {
         }
         String username, password;
         try {
-            BufferedReader br = request.getReader();
-            String str = "";
-            String listString = "";
-            while ((str = br.readLine()) != null) {
-                listString += str;
-            }
-            JSONObject jsonObject = (JSONObject) JSONObject.parse(listString);
-            username = jsonObject.get("username").toString();
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            username = body.get("username").toString();
             userInfo.setUsername(username);
-            password = jsonObject.get("password").toString();
+            password = body.get("password").toString();
             userInfo.setPassword(password);
         } catch (IOException e) {
-            rst.put("status", ServerConstant.RESPOND_CODE_FAILED);
-            return rst.toString();
+            rst.put("status", ServerUtil.RESPOND_CODE_FAILED);
+            return rst;
         }
         if (!userInfoRepository.queryUserInfoByUsername(username).isEmpty()) {
-            rst.put("status", ServerConstant.RESPOND_CODE_FAILED);
-            return rst.toString();
+            rst.put("status", ServerUtil.RESPOND_CODE_FAILED);
+            return rst;
         }
         userInfo.setUuid(uuid.toString());
         userInfo.setStatus(1);
@@ -64,8 +59,31 @@ public class ServerController {
         userInfo.setCreateTime(sdf.format(new Date()));
         userInfo.setUpdateTime(userInfo.getCreateTime());
         userInfoRepository.save(userInfo);
-        rst.put("status", ServerConstant.RESPOND_CODE_SUCCESS);
-        return rst.toString();
+        rst.put("status", ServerUtil.RESPOND_CODE_SUCCESS);
+        return rst;
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject login(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String username, password;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            username = body.get("username").toString();
+            password = body.get("password").toString();
+        } catch (IOException e) {
+            rst.put("status", ServerUtil.RESPOND_CODE_FAILED);
+            return rst;
+        }
+        if (userInfoRepository.queryUserInfoByUsernameAndPassword(username, password).isEmpty()) {
+            rst.put("status", ServerUtil.RESPOND_CODE_FAILED);
+            return rst;
+        }
+        // userOnlineRepository.save(username?);
+        rst.put("status", ServerUtil.RESPOND_CODE_SUCCESS);
+        return rst;
     }
 
 //    @RequestMapping("/query-user")
@@ -73,4 +91,5 @@ public class ServerController {
 //    public String queryUser(HttpServletRequest request) {
 //        
 //    }
+    
 }

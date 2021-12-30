@@ -1,5 +1,6 @@
 package com.github.ltprc.gamepal.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,15 +10,22 @@ import javax.persistence.Id;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column
     private Long id;
+    @Column
     private String uuid;
+    @Column
     private String username;
+    @Column
     private String password;
     /**
      * 0-inactive 1-activated
      */
+    @Column
     private Integer status;
+    @Column
     private String createTime;
+    @Column
     private String updateTime;
     public Long getId() {
         return id;
