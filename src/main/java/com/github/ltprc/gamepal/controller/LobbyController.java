@@ -2,7 +2,6 @@ package com.github.ltprc.gamepal.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 
