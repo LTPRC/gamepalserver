@@ -90,8 +90,10 @@ public class ServerController {
             SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
             sdf.applyPattern("yyyy-MM-dd HH:mm:ss");// a为am/pm的标记
             userOnline.setLoginTime(sdf.format(new Date()));
-            userOnlineRepository.save(userOnline);
-            return ResponseEntity.status(HttpStatus.OK).body("Login succeeded");
+            if (userOnlineRepository.queryUserOnlineByUuid(uuid).isEmpty()) {
+                userOnlineRepository.save(userOnline);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(uuid);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }

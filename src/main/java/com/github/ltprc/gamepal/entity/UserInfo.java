@@ -28,7 +28,9 @@ public class UserInfo {
     @Column(name = "updateTime", nullable = false)
     private String updateTime;
 
-    public UserInfo() {}
+    public UserInfo() {
+        super();
+    }
 
     public UserInfo(Long id, String uuid, String username, String password, Integer status, String createTime,
             String updateTime) {

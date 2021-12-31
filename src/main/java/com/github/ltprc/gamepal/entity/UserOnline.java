@@ -16,6 +16,18 @@ public class UserOnline {
     private String uuid;
     @Column(name = "loginTime", nullable = false)
     private String loginTime;
+
+    public UserOnline() {
+        super();
+    }
+
+    public UserOnline(Long id, String uuid, String loginTime) {
+        super();
+        this.id = id;
+        this.uuid = uuid;
+        this.loginTime = loginTime;
+    }
+
     public Long getId() {
         return id;
     }
