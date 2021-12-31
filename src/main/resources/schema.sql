@@ -9,3 +9,9 @@ CREATE TABLE if not exists `user_info` (
 primary key (`id`)
 --,unique key `uuid_key` (`uuid`) using btree
 );
+CREATE TABLE if not exists `user_online` (
+`id` long not null auto_increment,
+`uuid` varchar(36) unique not null,
+`login_time` varchar(19) not null,
+primary key (`id`)
+);

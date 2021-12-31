@@ -10,23 +10,38 @@ import javax.persistence.Id;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column
+    @Column(name = "id", nullable = false)
     private Long id;
-    @Column
+    @Column(name = "uuid", nullable = false)
     private String uuid;
-    @Column
+    @Column(name = "username", nullable = false)
     private String username;
-    @Column
+    @Column(name = "password", nullable = false)
     private String password;
     /**
      * 0-inactive 1-activated
      */
-    @Column
+    @Column(name = "status", nullable = false)
     private Integer status;
-    @Column
+    @Column(name = "createTime", nullable = false)
     private String createTime;
-    @Column
+    @Column(name = "updateTime", nullable = false)
     private String updateTime;
+
+    public UserInfo() {}
+
+    public UserInfo(Long id, String uuid, String username, String password, Integer status, String createTime,
+            String updateTime) {
+        super();
+        this.id = id;
+        this.uuid = uuid;
+        this.username = username;
+        this.password = password;
+        this.status = status;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
     public Long getId() {
         return id;
     }
