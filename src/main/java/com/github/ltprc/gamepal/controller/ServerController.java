@@ -3,7 +3,10 @@ package com.github.ltprc.gamepal.controller;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ltprc.gamepal.config.map.Position;
 import com.github.ltprc.gamepal.entity.UserInfo;
 import com.github.ltprc.gamepal.entity.UserOnline;
 import com.github.ltprc.gamepal.repository.UserInfoRepository;
@@ -93,7 +97,7 @@ public class ServerController {
             if (userOnlineRepository.queryUserOnlineByUuid(uuid).isEmpty()) {
                 userOnlineRepository.save(userOnline);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(uuid);
+            return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }
@@ -104,5 +108,52 @@ public class ServerController {
 //    public String queryUser(HttpServletRequest request) {
 //        
 //    }
-    
+
+    @RequestMapping(value = "/getPosition", method = RequestMethod.POST)
+    public ResponseEntity<String> getPosition(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String uuid;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            uuid = body.get("uuid").toString();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        Position position = ServerUtil.positionMap.get(uuid);
+        if (null == position) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
+        }
+        rst.put("x", position.getX());
+        rst.put("y", position.getY());
+        rst.put("sceneNo", position.getSceneNo());
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
+
+    @RequestMapping(value = "/getUsersByScene", method = RequestMethod.POST)
+    public ResponseEntity<String> getUsersByScene(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        int sceneNo;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            sceneNo = (int) body.get("sceneNo");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
+        if (null == uuidSet || uuidSet.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
+        }
+        Map<String, Position> positionMap = new HashMap<>();
+        uuidSet.stream().forEach(uuid -> positionMap.put(uuid, ServerUtil.positionMap.get(uuid)));
+        rst.put("positionMap", positionMap);
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
 }
