@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,6 +18,7 @@ public class ServerUtil {
 
     public final static Map<String, Position> positionMap = new HashMap<>(); // uuid, position
     public final static Map<Integer, Set<String>> userLocationMap = new HashMap<>(); // sceneNo, uuid
+    public final static Map<String, String> tokenMap = new ConcurrentHashMap<>(); // uuid, token
 
     public static JSONObject strRequest2JSONObject(HttpServletRequest request) throws IOException {
         BufferedReader br = request.getReader();

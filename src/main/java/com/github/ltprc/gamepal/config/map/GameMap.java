@@ -5,6 +5,7 @@ import java.util.List;
 
 public class GameMap {
 
+    // Relocate to Frontend!
     public static final List<Scene> scenes = null;
     public static final List<String> floorMenu;
     public static final List<String> wallMenu;

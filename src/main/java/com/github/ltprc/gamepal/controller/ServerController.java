@@ -2,15 +2,20 @@ package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.config.map.Position;
 import com.github.ltprc.gamepal.entity.UserInfo;
@@ -89,6 +95,19 @@ public class ServerController {
         if (!userInfoList.isEmpty()) {
             String uuid = (String) userInfoList.get(0).getUuid();
             rst.put("uuid", uuid);
+            if (!ServerUtil.positionMap.containsKey(uuid)) {
+                // Initialize position
+                int sceneTemp = 101;
+                Position positionTemp = new Position(sceneTemp, 300, 300);
+                ServerUtil.positionMap.put(uuid, positionTemp);
+                Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp) 
+                        ? ServerUtil.userLocationMap.get(sceneTemp) : new HashSet<>();
+                uuidSet.add(uuid);
+                ServerUtil.userLocationMap.put(sceneTemp, uuidSet);
+            }
+            String token = UUID.randomUUID().toString();
+            rst.put("token", token);
+            ServerUtil.tokenMap.put(uuid, token);
             UserOnline userOnline = new UserOnline();
             userOnline.setUuid(uuid);
             SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
@@ -103,11 +122,59 @@ public class ServerController {
         }
     }
 
-//    @RequestMapping("/query-user")
-//    @ResponseBody
-//    public String queryUser(HttpServletRequest request) {
-//        
-//    }
+    @RequestMapping(value = "/logoff", method = RequestMethod.POST)
+    public ResponseEntity<String> logoff(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String uuid, token;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            uuid = body.getString("uuid");
+            token = body.getString("token");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(uuid);
+        if (!userOnlineList.isEmpty()) {
+            userOnlineRepository.delete(userOnlineList.get(0));
+        }
+        if (ServerUtil.positionMap.containsKey(uuid)) {
+            Position position = ServerUtil.positionMap.get(uuid);
+            int sceneNo = position.getSceneNo();
+            if (ServerUtil.userLocationMap.containsKey(sceneNo)) {
+                Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
+                uuidSet.remove(uuid);
+            }
+        }
+        if (token.equals(ServerUtil.tokenMap.get(uuid))) {
+            ServerUtil.tokenMap.remove(uuid);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
+
+    @RequestMapping(value = "/checkToken", method = RequestMethod.POST)
+    public ResponseEntity<String> checkToken(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String uuid, token;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            uuid = body.getString("uuid");
+            token = body.getString("token");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        if (!token.equals(ServerUtil.tokenMap.get(uuid))) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
 
     @RequestMapping(value = "/getPosition", method = RequestMethod.POST)
     public ResponseEntity<String> getPosition(HttpServletRequest request) {
@@ -151,7 +218,14 @@ public class ServerController {
         if (null == uuidSet || uuidSet.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
         }
-        Map<String, Position> positionMap = new HashMap<>();
+        Comparator<Map.Entry<String, Position>> comparator = new Comparator<Map.Entry<String, Position>>() {
+            @Override
+            public int compare(Entry<String, Position> e1, Entry<String, Position> e2) {
+                return e1.getValue().getY() - e2.getValue().getY();
+            }
+        };
+        // From smaller y to bigger y
+        Map<String, Position> positionMap = new TreeMap<String, Position>();
         uuidSet.stream().forEach(uuid -> positionMap.put(uuid, ServerUtil.positionMap.get(uuid)));
         rst.put("positionMap", positionMap);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
