@@ -6,18 +6,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,8 +97,8 @@ public class ServerController {
             rst.put("uuid", uuid);
             if (!ServerUtil.positionMap.containsKey(uuid)) {
                 // Initialize position
-                int sceneTemp = 101;
-                Position positionTemp = new Position(sceneTemp, 300, 300, 101, 0, 7);
+                int sceneTemp = 0;
+                Position positionTemp = new Position(sceneTemp, 300, 300, 0, 0, 7);
                 ServerUtil.positionMap.put(uuid, positionTemp);
                 Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp) 
                         ? ServerUtil.userLocationMap.get(sceneTemp) : new HashSet<>();
@@ -204,21 +202,27 @@ public class ServerController {
     public ResponseEntity<String> setPosition(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
         String uuid;
-        Set<String> uuidSet;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
             if (null == jsonObject || !jsonObject.containsKey("body")) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            if (null == body || null == body.get("sceneNo") || null == body.get("uuid") || null == body.get("sceneNo")
+                    || null == body.get("x") || null == body.get("y") || null == body.get("outfit")
+                    || null == body.get("speed") || null == body.get("direction")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
             uuid = (String) body.get("uuid");
             /**
              * Remove old information
              */
             if (ServerUtil.positionMap.containsKey(uuid)) {
                 int formerSceneNo = ServerUtil.positionMap.get(uuid).getSceneNo();
-                uuidSet = ServerUtil.userLocationMap.get(formerSceneNo);
-                uuidSet.remove(uuid);
+                if (ServerUtil.userLocationMap.containsKey(formerSceneNo)) {
+                    Set<String> formerUuidSet = ServerUtil.userLocationMap.get(formerSceneNo);
+                    formerUuidSet.remove(uuid);
+                }
             }
             Position position = new Position();
             position.setSceneNo((int) body.get("sceneNo"));
@@ -228,8 +232,10 @@ public class ServerController {
             position.setSpeed((int) body.get("speed"));
             position.setDirection((int) body.get("direction"));
             ServerUtil.positionMap.put(uuid, position);
-            uuidSet = ServerUtil.userLocationMap.get(position.getSceneNo());
-            uuidSet.add(uuid);
+            if (ServerUtil.userLocationMap.containsKey(position.getSceneNo())) {
+                Set<String> uuidSet = ServerUtil.userLocationMap.get(position.getSceneNo());
+                uuidSet.add(uuid);
+            }
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
@@ -247,14 +253,13 @@ public class ServerController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            if (null == body || null == body.get("sceneNo") || null == body.get("uuid")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
             sceneNo = (int) body.get("sceneNo");
             uuid = (String) body.get("uuid");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
-        }
-        Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
-        if (null == uuidSet || uuidSet.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
         }
         // From smaller y to bigger y
         Comparator<UserPosition> comparator = new Comparator<UserPosition>() {
@@ -264,8 +269,17 @@ public class ServerController {
             }
         };
         Queue<UserPosition> queue = new PriorityQueue<>(comparator);
-        // 不包括自己 不然永远别想动了！
-        uuidSet.stream().filter(uuid1 -> !uuid1.equals(uuid)).forEach(uuid1 -> queue.add(new UserPosition(uuid1, ServerUtil.positionMap.get(uuid1))));
+        Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
+        if (null != uuidSet && !uuidSet.isEmpty()) {
+            // 不包括自己 不然永远别想动了！
+            Iterator<String> uuidSetIterator = uuidSet.iterator();
+            while (uuidSetIterator.hasNext()) {
+                String otherUuid = uuidSetIterator.next();
+                if (!otherUuid.equals(uuid)) {
+                    queue.add(new UserPosition(otherUuid, ServerUtil.positionMap.get(otherUuid)));
+                }
+            }
+        }
         rst.put("positionMap", queue);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
