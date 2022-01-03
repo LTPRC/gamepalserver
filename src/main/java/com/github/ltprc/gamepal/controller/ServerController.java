@@ -1,6 +1,7 @@
 package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -96,7 +97,7 @@ public class ServerController {
             if (!ServerUtil.positionMap.containsKey(uuid)) {
                 // Initialize position
                 int sceneTemp = 0;
-                Position positionTemp = new Position(sceneTemp, 300, 300, 0, 0, 7);
+                Position positionTemp = new Position(sceneTemp, new BigDecimal(1), new BigDecimal(1), 0, new BigDecimal(0), 7);
                 ServerUtil.positionMap.put(uuid, positionTemp);
                 Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp) 
                         ? ServerUtil.userLocationMap.get(sceneTemp) : new HashSet<>();
@@ -224,10 +225,10 @@ public class ServerController {
             }
             Position position = new Position();
             position.setSceneNo((int) body.get("sceneNo"));
-            position.setX((int) body.get("x"));
-            position.setY((int) body.get("y"));
+            position.setX((BigDecimal)body.get("x"));
+            position.setY((BigDecimal)body.get("y"));
             position.setOutfit((int) body.get("outfit"));
-            position.setSpeed((int) body.get("speed"));
+            position.setSpeed((BigDecimal) body.get("speed"));
             position.setDirection((int) body.get("direction"));
             ServerUtil.positionMap.put(uuid, position);
             if (ServerUtil.userLocationMap.containsKey(position.getSceneNo())) {
@@ -263,7 +264,7 @@ public class ServerController {
         Comparator<UserPosition> comparator = new Comparator<UserPosition>() {
             @Override
             public int compare(UserPosition up1, UserPosition up2) {
-                return up1.getY() - up2.getY();
+                return up1.getY().compareTo(up2.getY());
             }
         };
         Queue<UserPosition> queue = new PriorityQueue<>(comparator);
