@@ -97,7 +97,7 @@ public class ServerController {
             if (!ServerUtil.positionMap.containsKey(uuid)) {
                 // Initialize position
                 int sceneTemp = 0;
-                Position positionTemp = new Position(sceneTemp, new BigDecimal(1), new BigDecimal(1), 0, new BigDecimal(0), 7);
+                Position positionTemp = new Position(sceneTemp, new BigDecimal(1.0), new BigDecimal(1.0), 0, new BigDecimal(0.0), 7);
                 ServerUtil.positionMap.put(uuid, positionTemp);
                 Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp) 
                         ? ServerUtil.userLocationMap.get(sceneTemp) : new HashSet<>();
@@ -168,6 +168,10 @@ public class ServerController {
             token = body.getString("token");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        // If there is no token found, old token will be automatically filled
+        if (!ServerUtil.tokenMap.containsKey(uuid)) {
+            ServerUtil.tokenMap.put(uuid, token);
         }
         if (!token.equals(ServerUtil.tokenMap.get(uuid))) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
