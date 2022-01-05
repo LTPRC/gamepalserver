@@ -5,13 +5,13 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ltprc.gamepal.config.map.Position;
-import com.github.ltprc.gamepal.config.map.UserPosition;
+import com.github.ltprc.gamepal.model.map.Position;
+import com.github.ltprc.gamepal.model.map.UserPosition;
 import com.github.ltprc.gamepal.entity.UserInfo;
 import com.github.ltprc.gamepal.entity.UserOnline;
 import com.github.ltprc.gamepal.repository.UserInfoRepository;
@@ -97,10 +97,12 @@ public class ServerController {
             if (!ServerUtil.positionMap.containsKey(uuid)) {
                 // Initialize position
                 int sceneTemp = 0;
-                Position positionTemp = new Position(sceneTemp, new BigDecimal(1.0), new BigDecimal(1.0), 0, new BigDecimal(0.0), 7);
+                Position positionTemp = new Position(sceneTemp, new BigDecimal(-1), new BigDecimal(-1), 0,
+                        new BigDecimal(0), new BigDecimal(0), 7);
                 ServerUtil.positionMap.put(uuid, positionTemp);
-                Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp) 
-                        ? ServerUtil.userLocationMap.get(sceneTemp) : new HashSet<>();
+                Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp)
+                        ? ServerUtil.userLocationMap.get(sceneTemp)
+                        : new ConcurrentSkipListSet<>();
                 uuidSet.add(uuid);
                 ServerUtil.userLocationMap.put(sceneTemp, uuidSet);
             }
@@ -213,7 +215,7 @@ public class ServerController {
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             if (null == body || null == body.get("sceneNo") || null == body.get("uuid") || null == body.get("sceneNo")
                     || null == body.get("x") || null == body.get("y") || null == body.get("outfit")
-                    || null == body.get("speed") || null == body.get("direction")) {
+                    || null == body.get("speedX") || null == body.get("speedY") || null == body.get("direction")) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
             uuid = (String) body.get("uuid");
@@ -229,10 +231,11 @@ public class ServerController {
             }
             Position position = new Position();
             position.setSceneNo((int) body.get("sceneNo"));
-            position.setX((BigDecimal)body.get("x"));
-            position.setY((BigDecimal)body.get("y"));
+            position.setX(new BigDecimal(body.get("x").toString()));
+            position.setY(new BigDecimal(body.get("y").toString()));
             position.setOutfit((int) body.get("outfit"));
-            position.setSpeed((BigDecimal) body.get("speed"));
+            position.setSpeedX(new BigDecimal(body.get("speedX").toString()));
+            position.setSpeedY(new BigDecimal(body.get("speedY").toString()));
             position.setDirection((int) body.get("direction"));
             ServerUtil.positionMap.put(uuid, position);
             if (ServerUtil.userLocationMap.containsKey(position.getSceneNo())) {

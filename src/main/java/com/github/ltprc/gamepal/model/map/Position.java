@@ -1,4 +1,4 @@
-package com.github.ltprc.gamepal.config.map;
+package com.github.ltprc.gamepal.model.map;
 
 import java.math.BigDecimal;
 
@@ -8,19 +8,21 @@ public class Position {
     protected BigDecimal x;
     protected BigDecimal y;
     protected int outfit;
-    protected BigDecimal speed;
+    protected BigDecimal speedX;
+    protected BigDecimal speedY;
     protected int direction;
 
     public Position() {
     }
 
-    public Position(int sceneNo, BigDecimal x, BigDecimal y, int outfit, BigDecimal speed, int direction) {
+    public Position(int sceneNo, BigDecimal x, BigDecimal y, int outfit, BigDecimal speedX, BigDecimal speedY, int direction) {
         super();
         this.sceneNo = sceneNo;
         this.x = x;
         this.y = y;
         this.outfit = outfit;
-        this.speed = speed;
+        this.speedX = speedX;
+        this.speedY = speedY;
         this.direction = direction;
     }
 
@@ -56,12 +58,20 @@ public class Position {
         this.outfit = outfit;
     }
 
-    public BigDecimal getSpeed() {
-        return speed;
+    public BigDecimal getSpeedX() {
+        return speedX;
     }
 
-    public void setSpeed(BigDecimal speed) {
-        this.speed = speed;
+    public void setSpeedX(BigDecimal speedX) {
+        this.speedX = speedX;
+    }
+
+    public BigDecimal getSpeedY() {
+        return speedY;
+    }
+
+    public void setSpeedY(BigDecimal speedY) {
+        this.speedY = speedY;
     }
 
     public int getDirection() {

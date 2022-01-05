@@ -1,4 +1,4 @@
-package com.github.ltprc.gamepal.config.map;
+package com.github.ltprc.gamepal.model.map;
 
 public class UserPosition extends Position {
 
@@ -11,7 +11,8 @@ public class UserPosition extends Position {
         this.x = position.getX();
         this.y = position.getY();
         this.outfit = position.getOutfit();
-        this.speed = position.getSpeed();
+        this.speedX = position.getSpeedX();
+        this.speedY = position.getSpeedY();
         this.direction = position.getDirection();
     }
 
