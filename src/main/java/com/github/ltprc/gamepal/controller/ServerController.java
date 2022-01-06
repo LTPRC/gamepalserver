@@ -11,6 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -109,6 +110,9 @@ public class ServerController {
             String token = UUID.randomUUID().toString();
             rst.put("token", token);
             ServerUtil.tokenMap.put(uuid, token);
+            if (!ServerUtil.chatMap.containsKey(uuid)) {
+                ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
+            }
             UserOnline userOnline = new UserOnline();
             userOnline.setUuid(uuid);
             SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
@@ -150,6 +154,7 @@ public class ServerController {
 //                uuidSet.remove(uuid);
 //            }
 //        }
+        ServerUtil.chatMap.remove(uuid, new ConcurrentLinkedQueue<>());
         if (token.equals(ServerUtil.tokenMap.get(uuid))) {
             ServerUtil.tokenMap.remove(uuid);
         }
