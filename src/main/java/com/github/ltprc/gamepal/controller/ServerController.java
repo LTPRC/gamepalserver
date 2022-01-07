@@ -3,6 +3,7 @@ package com.github.ltprc.gamepal.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -110,6 +111,8 @@ public class ServerController {
             String token = UUID.randomUUID().toString();
             rst.put("token", token);
             ServerUtil.tokenMap.put(uuid, token);
+            ServerUtil.onlineMap.remove(uuid);
+            ServerUtil.onlineMap.put(uuid, Instant.now().getEpochSecond());
             if (!ServerUtil.chatMap.containsKey(uuid)) {
                 ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             }
@@ -142,22 +145,7 @@ public class ServerController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
-        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(uuid);
-        if (!userOnlineList.isEmpty()) {
-            userOnlineRepository.delete(userOnlineList.get(0));
-        }
-//        if (ServerUtil.positionMap.containsKey(uuid)) {
-//            Position position = ServerUtil.positionMap.get(uuid);
-//            int sceneNo = position.getSceneNo();
-//            if (ServerUtil.userLocationMap.containsKey(sceneNo)) {
-//                Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
-//                uuidSet.remove(uuid);
-//            }
-//        }
-        ServerUtil.chatMap.remove(uuid, new ConcurrentLinkedQueue<>());
-        if (token.equals(ServerUtil.tokenMap.get(uuid))) {
-            ServerUtil.tokenMap.remove(uuid);
-        }
+        ServerUtil.afterLogoff(uuid, token);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 
