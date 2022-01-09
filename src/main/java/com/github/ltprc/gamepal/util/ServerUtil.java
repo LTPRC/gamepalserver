@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.entity.UserOnline;
@@ -20,9 +21,12 @@ import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.model.map.Position;
 import com.github.ltprc.gamepal.repository.UserOnlineRepository;
 
+@Component
 public class ServerUtil {
 
     public final static String API_PATH = "/api/v1";
+    public final static int MAX_MESSAGE_LINE_NUM = 10;
+    public final static int MAX_CHAR_NUM_PER_LINE = 100;
 
     public final static Map<String, String> tokenMap = new ConcurrentHashMap<>(); // uuid, token
     public final static LinkedHashMap<String, Long> onlineMap = new LinkedHashMap<>(); // uuid, timestamp
