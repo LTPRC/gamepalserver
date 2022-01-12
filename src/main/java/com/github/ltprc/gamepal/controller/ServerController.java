@@ -99,7 +99,7 @@ public class ServerController {
             if (!ServerUtil.positionMap.containsKey(uuid)) {
                 // Initialize position
                 int sceneTemp = 0;
-                Position positionTemp = new Position(sceneTemp, new BigDecimal(-1), new BigDecimal(-1), 0,
+                Position positionTemp = new Position(sceneTemp, new BigDecimal(-1), new BigDecimal(-1), 
                         new BigDecimal(0), new BigDecimal(0), 7);
                 ServerUtil.positionMap.put(uuid, positionTemp);
                 Set<String> uuidSet = ServerUtil.userLocationMap.containsKey(sceneTemp)
@@ -115,6 +115,9 @@ public class ServerController {
             ServerUtil.onlineMap.put(uuid, Instant.now().getEpochSecond());
             if (!ServerUtil.chatMap.containsKey(uuid)) {
                 ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
+            }
+            if (!ServerUtil.voiceMap.containsKey(uuid)) {
+                ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
             }
             UserOnline userOnline = new UserOnline();
             userOnline.setUuid(uuid);
@@ -145,7 +148,7 @@ public class ServerController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
-        ServerUtil.afterLogoff(uuid, token);
+        afterLogoff(uuid, token);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 
@@ -207,7 +210,7 @@ public class ServerController {
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             if (null == body || null == body.get("sceneNo") || null == body.get("uuid") || null == body.get("sceneNo")
-                    || null == body.get("x") || null == body.get("y") || null == body.get("outfit")
+                    || null == body.get("x") || null == body.get("y")
                     || null == body.get("speedX") || null == body.get("speedY") || null == body.get("direction")) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
@@ -226,7 +229,6 @@ public class ServerController {
             position.setSceneNo((int) body.get("sceneNo"));
             position.setX(new BigDecimal(body.get("x").toString()));
             position.setY(new BigDecimal(body.get("y").toString()));
-            position.setOutfit((int) body.get("outfit"));
             position.setSpeedX(new BigDecimal(body.get("speedX").toString()));
             position.setSpeedY(new BigDecimal(body.get("speedY").toString()));
             position.setDirection((int) body.get("direction"));
@@ -281,5 +283,30 @@ public class ServerController {
         }
         rst.put("positionMap", queue);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
+
+    public void afterLogoff(String uuid, String token) {
+        afterLogoff(uuid);
+        if (token.equals(ServerUtil.tokenMap.get(uuid))) {
+            ServerUtil.tokenMap.remove(uuid);
+        }
+    }
+
+    public void afterLogoff(String uuid) {
+        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(uuid);
+        if (!userOnlineList.isEmpty()) {
+            userOnlineRepository.delete(userOnlineList.get(0));
+        }
+        //      if (ServerUtil.positionMap.containsKey(uuid)) {
+        //      Position position = ServerUtil.positionMap.get(uuid);
+        //      int sceneNo = position.getSceneNo();
+        //      if (ServerUtil.userLocationMap.containsKey(sceneNo)) {
+        //          Set<String> uuidSet = ServerUtil.userLocationMap.get(sceneNo);
+        //          uuidSet.remove(uuid);
+        //      }
+        //  }
+        ServerUtil.chatMap.remove(uuid);
+        ServerUtil.voiceMap.remove(uuid);
+        ServerUtil.onlineMap.remove(uuid);
     }
 }

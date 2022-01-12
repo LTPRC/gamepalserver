@@ -7,7 +7,6 @@ public class Position {
     protected int sceneNo;
     protected BigDecimal x;
     protected BigDecimal y;
-    protected int outfit;
     protected BigDecimal speedX;
     protected BigDecimal speedY;
     protected int direction;
@@ -15,12 +14,11 @@ public class Position {
     public Position() {
     }
 
-    public Position(int sceneNo, BigDecimal x, BigDecimal y, int outfit, BigDecimal speedX, BigDecimal speedY, int direction) {
+    public Position(int sceneNo, BigDecimal x, BigDecimal y, BigDecimal speedX, BigDecimal speedY, int direction) {
         super();
         this.sceneNo = sceneNo;
         this.x = x;
         this.y = y;
-        this.outfit = outfit;
         this.speedX = speedX;
         this.speedY = speedY;
         this.direction = direction;
@@ -48,14 +46,6 @@ public class Position {
 
     public void setY(BigDecimal y) {
         this.y = y;
-    }
-
-    public int getOutfit() {
-        return outfit;
-    }
-
-    public void setOutfit(int outfit) {
-        this.outfit = outfit;
     }
 
     public BigDecimal getSpeedX() {

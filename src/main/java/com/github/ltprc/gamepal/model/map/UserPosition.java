@@ -10,7 +10,6 @@ public class UserPosition extends Position {
         this.sceneNo = position.getSceneNo();
         this.x = position.getX();
         this.y = position.getY();
-        this.outfit = position.getOutfit();
         this.speedX = position.getSpeedX();
         this.speedY = position.getSpeedY();
         this.direction = position.getDirection();

@@ -1,6 +1,6 @@
 package com.github.ltprc.gamepal.model;
 
-public class ChatMessage extends Message {
+public class VoiceMessage extends Message {
     protected String content;
     public String getContent() {
         return content;

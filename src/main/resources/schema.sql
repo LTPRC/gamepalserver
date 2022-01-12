@@ -32,5 +32,7 @@ CREATE TABLE if not exists `user_character` (
 `face_decoration` varchar(50),
 `outfit` varchar(50),
 `body_decoration` varchar(50),
+`create_time` varchar(19) not null,
+`update_time` varchar(19) not null,
 primary key (`id`)
 );
