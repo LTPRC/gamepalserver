@@ -83,7 +83,6 @@ public class ServerController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<String> login(HttpServletRequest request) {
-        JSONObject rst = new JSONObject();
         String username, password;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
@@ -99,9 +98,7 @@ public class ServerController {
         List<UserInfo> userInfoList = userInfoRepository.queryUserInfoByUsernameAndPassword(username, password);
         if (!userInfoList.isEmpty()) {
             String uuid = (String) userInfoList.get(0).getUuid();
-            rst.put("uuid", uuid);
             String token = UUID.randomUUID().toString();
-            rst.put("token", token);
             ServerUtil.tokenMap.put(uuid, token);
             ServerUtil.onlineMap.remove(uuid);
             ServerUtil.onlineMap.put(uuid, Instant.now().getEpochSecond());
@@ -115,7 +112,6 @@ public class ServerController {
             }
             UserData userData = new UserData();
             userData.setUserCode(uuid);
-            userData.setToken(token);
             userData.setSceneNo(0); // To be determined
             userData.setNearbySceneNos(new ArrayList<>()); // To be determined
             userData.setPlayerX(new BigDecimal(3)); // To be determined
@@ -148,7 +144,7 @@ public class ServerController {
             ServerUtil.userLocationMap.put(userData.getSceneNo(), userCodeSet);
             ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
-            return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+            return ResponseEntity.status(HttpStatus.OK).body(ServerUtil.generateReplyContent(userData));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }
@@ -157,36 +153,36 @@ public class ServerController {
     @RequestMapping(value = "/logoff", method = RequestMethod.POST)
     public ResponseEntity<String> logoff(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
-        String uuid, token;
+        String userCode, token;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
             if (null == jsonObject || !jsonObject.containsKey("body")) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            uuid = body.getString("uuid");
+            userCode = body.getString("userCode");
             token = body.getString("token");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
-        afterLogoff(uuid, token);
+        afterLogoff(userCode, token);
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 
-    private void afterLogoff(String uuid, String token) {
-        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(uuid);
+    private void afterLogoff(String userCode, String token) {
+        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(userCode);
         if (!userOnlineList.isEmpty()) {
             userOnlineRepository.delete(userOnlineList.get(0));
         }
-        if (token.equals(ServerUtil.tokenMap.get(uuid))) {
-            ServerUtil.tokenMap.remove(uuid);
-            ServerUtil.onlineMap.remove(uuid);
-            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(uuid).getSceneNo(), new ConcurrentSkipListSet<>());
-            userCodeSet.remove(uuid);
-            ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(uuid).getSceneNo(), userCodeSet);
-            ServerUtil.chatMap.remove(uuid);
-            ServerUtil.voiceMap.remove(uuid);
-            ServerUtil.userDataMap.remove(uuid);
+        if (token.equals(ServerUtil.tokenMap.get(userCode))) {
+            ServerUtil.tokenMap.remove(userCode);
+            ServerUtil.onlineMap.remove(userCode);
+            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
+            userCodeSet.remove(userCode);
+            ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
+            ServerUtil.chatMap.remove(userCode);
+            ServerUtil.voiceMap.remove(userCode);
+            ServerUtil.userDataMap.remove(userCode);
         }
     }
 }

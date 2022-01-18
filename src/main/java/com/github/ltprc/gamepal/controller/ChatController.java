@@ -37,7 +37,7 @@ public class ChatController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message sending failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            uuid = body.get("uuid").toString();
+            uuid = body.get("userCode").toString();
             receiver = body.get("receiver").toString();
             type = (Integer) body.get("type");
             content = body.get("content").toString();
@@ -85,7 +85,7 @@ public class ChatController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message sending failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            uuid = body.get("uuid").toString();
+            uuid = body.get("userCode").toString();
             receiver = body.get("receiver").toString();
             type = (Integer) body.get("type");
             content = (String) body.get("content");
@@ -133,7 +133,7 @@ public class ChatController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            uuid = body.get("uuid").toString();
+            uuid = body.get("userCode").toString();
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message receiving failed");
         }

@@ -15,6 +15,9 @@ CREATE TABLE if not exists `user_online` (
 `login_time` varchar(19) not null,
 primary key (`id`)
 );
+
+drop table `user_character`;
+
 CREATE TABLE if not exists `user_character` (
 `id` long not null auto_increment,
 `uuid` varchar(36) unique not null,
@@ -32,6 +35,7 @@ CREATE TABLE if not exists `user_character` (
 `face_decoration` varchar(50),
 `outfit` varchar(50),
 `body_decoration` varchar(50),
+`avatar` integer DEFAULT 0,
 `create_time` varchar(19) not null,
 `update_time` varchar(19) not null,
 primary key (`id`)

@@ -27,6 +27,7 @@ public class CharacterController {
     @Autowired
     UserCharacterRepository userCharacterRepository;
 
+    @Deprecated
     @RequestMapping(value = "/get-user-character", method = RequestMethod.POST)
     public ResponseEntity<String> getUserCharacter(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
@@ -73,6 +74,7 @@ public class CharacterController {
             userCharacter.setHairColor(body.get("hairColor").toString());
             userCharacter.setEyes(body.get("eyes").toString());
             userCharacter.setOutfit(body.get("outfit").toString());
+            userCharacter.setAvatar(body.getInteger("avatar"));
             uuid = body.get("uuid").toString();
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");

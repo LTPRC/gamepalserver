@@ -6,7 +6,6 @@ import java.util.List;
 
 public class UserData {
     private String userCode;
-    private String token;
     private int sceneNo;
     private List<Integer> nearbySceneNos;
     private BigDecimal playerX;
@@ -34,18 +33,13 @@ public class UserData {
     private String hairColor;
     private String eyes;
     private String outfit;
+    private int avatar;
 
     public String getUserCode() {
         return userCode;
     }
     public void setUserCode(String userCode) {
         this.userCode = userCode;
-    }
-    public String getToken() {
-        return token;
-    }
-    public void setToken(String token) {
-        this.token = token;
     }
     public int getSceneNo() {
         return sceneNo;
@@ -184,5 +178,11 @@ public class UserData {
     }
     public void setOutfit(String outfit) {
         this.outfit = outfit;
+    }
+    public int getAvatar() {
+        return avatar;
+    }
+    public void setAvatar(int avatar) {
+        this.avatar = avatar;
     }
 }

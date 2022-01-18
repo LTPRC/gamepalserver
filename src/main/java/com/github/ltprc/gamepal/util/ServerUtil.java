@@ -2,6 +2,8 @@ package com.github.ltprc.gamepal.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import javax.websocket.server.PathParam;
 
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.ChatMessage;
@@ -57,31 +60,49 @@ public class ServerUtil {
         }
     }
 
-    public static void reply(UserData userData) {
+    public static String generateReplyContent(UserData userData) {
         String userCode = userData.getUserCode();
         JSONObject rst = new JSONObject();
-        List<Integer> sceneNos = userData.getNearbySceneNos();
+        rst.put("userCode", userCode);
+        rst.put("token", ServerUtil.tokenMap.get(userCode));
+        List<Integer> sceneNos = new ArrayList<>();
         sceneNos.add(userData.getSceneNo());
+        sceneNos.addAll(userData.getNearbySceneNos());
         Set<String> userCodes = new ConcurrentSkipListSet<>();
         for (int sceneNo : sceneNos) {
             userCodes.addAll(ServerUtil.userLocationMap.get(sceneNo));
         }
         /**
-         * All nearby sceneNos will be included. Except for userCode itself.
+         * All nearby sceneNos will be included fFrom smaller y to bigger y.
+         * Include userCode itself now!
          */
-        rst.put("userdatas", ServerUtil.userDataMap.entrySet().stream().filter(entry -> userCodes.contains(entry.getKey()) && entry.getKey() != userCode));
+        Comparator<UserData> comparator = new Comparator<UserData>() {
+            @Override
+            public int compare(UserData up1, UserData up2) {
+                return up1.getPlayerY().compareTo(up2.getPlayerY());
+            }
+        };
+        Set<UserData> userDatas = new ConcurrentSkipListSet<>(comparator);
+        for (String code : userCodes) {
+            userDatas.add(ServerUtil.userDataMap.get(code));
+        }
+        rst.put("userDatas", JSON.toJSON(userDatas));
 
-        JSONArray chatMessages = new JSONArray();
-        chatMessages.addAll(ServerUtil.chatMap.get(userCode));
-        ServerUtil.chatMap.remove(userCode);
-        rst.put("chatMessages", chatMessages);
+        if (ServerUtil.chatMap.containsKey(userCode) && !ServerUtil.chatMap.get(userCode).isEmpty()) {
+            JSONArray chatMessages = new JSONArray();
+            chatMessages.addAll(ServerUtil.chatMap.get(userCode));
+            ServerUtil.chatMap.remove(userCode);
+            rst.put("chatMessages", chatMessages);
+        }
 
-        JSONArray voiceMessages = new JSONArray();
-        voiceMessages.addAll(ServerUtil.voiceMap.get(userCode));
-        ServerUtil.voiceMap.remove(userCode);
-        rst.put("voiceMessages", voiceMessages);
+        if (ServerUtil.voiceMap.containsKey(userCode) && !ServerUtil.voiceMap.get(userCode).isEmpty()) {
+            JSONArray voiceMessages = new JSONArray();
+            voiceMessages.addAll(ServerUtil.voiceMap.get(userCode));
+            ServerUtil.voiceMap.remove(userCode);
+            rst.put("voiceMessages", voiceMessages);
+        }
 
-        sendMessage(userCode, JSONArray.toJSONString(rst));
+        return JSONArray.toJSONString(rst);
     }
 
     /**

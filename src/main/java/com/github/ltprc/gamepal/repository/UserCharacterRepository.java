@@ -10,6 +10,6 @@ import com.github.ltprc.gamepal.entity.UserCharacter;
 
 public interface UserCharacterRepository extends JpaRepository<UserCharacter, Long> {
 
-    @Query(value="select new UserCharacter(id, uuid, firstName, lastName, nickname, nameColor, creature, gender, skinColor, hairstyle, hairColor, eyes, faceRatio, faceDecoration, outfit, bodyDecoration, createTime, updateTime) from UserCharacter where uuid=:uuid")
+    @Query(value="select new UserCharacter(id, uuid, firstName, lastName, nickname, nameColor, creature, gender, skinColor, hairstyle, hairColor, eyes, faceRatio, faceDecoration, outfit, bodyDecoration, avatar, createTime, updateTime) from UserCharacter where uuid=:uuid")
     public List<UserCharacter> queryUserCharacterByUuid(@Param("uuid") String uuid);
 }

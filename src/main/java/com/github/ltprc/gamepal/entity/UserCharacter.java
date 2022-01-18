@@ -42,6 +42,8 @@ public class UserCharacter {
     private String outfit;
     @Column(name = "bodyDecoration")
     private String bodyDecoration;
+    @Column(name = "avatar")
+    private int avatar;
     @Column(name = "createTime", nullable = false)
     private String createTime;
     @Column(name = "updateTime", nullable = false)
@@ -51,7 +53,7 @@ public class UserCharacter {
 
     public UserCharacter(Long id, String uuid, String firstName, String lastName, String nickname, String nameColor,
             String creature, String gender, String skinColor, String hairstyle, String hairColor, String eyes,
-            String faceRatio, String faceDecoration, String outfit, String bodyDecoration, String createTime,
+            String faceRatio, String faceDecoration, String outfit, String bodyDecoration, int avatar, String createTime,
             String updateTime) {
         super();
         this.id = id;
@@ -70,6 +72,7 @@ public class UserCharacter {
         this.faceDecoration = faceDecoration;
         this.outfit = outfit;
         this.bodyDecoration = bodyDecoration;
+        this.avatar = avatar;
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
@@ -200,6 +203,14 @@ public class UserCharacter {
 
     public void setBodyDecoration(String bodyDecoration) {
         this.bodyDecoration = bodyDecoration;
+    }
+
+    public int getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(int avatar) {
+        this.avatar = avatar;
     }
 
     public String getCreateTime() {
