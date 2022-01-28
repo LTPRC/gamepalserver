@@ -2,7 +2,6 @@ package com.github.ltprc.gamepal.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -14,14 +13,12 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.entity.UserOnline;
@@ -49,6 +46,9 @@ public class WebSocketController {
     public void onOpen(Session session, @PathParam("userCode") String userCode) {
         ServerUtil.sessionMap.put(userCode, session);
         logger.info("建立连接成功");
+//        String content = ServerUtil.generateInitContent(userCode);
+        //ServerUtil.sendMessage(userCode, content);
+//        System.out.println("Sent String: " + content);
     }
 
     /**
@@ -66,111 +66,114 @@ public class WebSocketController {
      * @param userCode
      * @param message
      */
-    @SuppressWarnings("unchecked")
     @OnMessage
     public void onMessage(@NonNull String message) {
-        System.out.println("Received String (size:" + message.length() + ")");
-        System.out.println("Received String: " + message);
+        //System.out.println("Received String (size:" + message.length() + ")");
         JSONObject jsonObject = JSONObject.parseObject(message);
         if (null == jsonObject || !jsonObject.containsKey("userCode")) {
             return;
         }
         String userCode = jsonObject.getString("userCode").toString();
-
+        if (jsonObject.containsKey("initFlag")) {
+            String content = ServerUtil.generateInitContent(userCode);
+            ServerUtil.sendMessage(userCode, content);
+            return;
+        }
         UserData userData = ServerUtil.userDataMap.get(userCode);
 
         /**
          * Update userDatas
          */
-        if (jsonObject.containsKey("userData")) {
-            JSONObject newUserDataJSONObject = jsonObject.getJSONObject("userData");
-            for (Entry<String, Object> entry : newUserDataJSONObject.entrySet()) {
-                switch (entry.getKey()) {
-                case "sceneNo":
-                    userData.setSceneNo((int) entry.getValue());
-                    break;
-                case "nearbySceneNos":
-                    userData.setNearbySceneNos((List<Integer>) entry.getValue());
-                    break;
-                case "playerX":
-                    userData.setPlayerX((BigDecimal) entry.getValue());
-                    break;
-                case "playerY":
-                    userData.setPlayerY((BigDecimal) entry.getValue());
-                    break;
-                case "playerNextX":
-                    userData.setPlayerNextX((BigDecimal) entry.getValue());
-                    break;
-                case "playerNextY":
-                    userData.setPlayerNextY((BigDecimal) entry.getValue());
-                    break;
-                case "playerSpeedX":
-                    userData.setPlayerSpeedX((BigDecimal) entry.getValue());
-                    break;
-                case "playerSpeedY":
-                    userData.setPlayerSpeedY((BigDecimal) entry.getValue());
-                    break;
-                case "playerMaxSpeedX":
-                    userData.setPlayerMaxSpeedX((BigDecimal) entry.getValue());
-                    break;
-                case "playerMaxSpeedY":
-                    userData.setPlayerMaxSpeedY((BigDecimal) entry.getValue());
-                    break;
-                case "acceleration":
-                    userData.setAcceleration((BigDecimal) entry.getValue());
-                    break;
-                case "playerDirection":
-                    userData.setPlayerDirection((int) entry.getValue());
-                    break;
-                case "firstName":
-                    userData.setFirstName((String) entry.getValue());
-                    break;
-                case "lastName":
-                    userData.setLastName((String) entry.getValue());
-                    break;
-                case "nickname":
-                    userData.setNickname((String) entry.getValue());
-                    break;
-                case "nameColor":
-                    userData.setNameColor((String) entry.getValue());
-                    break;
-                case "creature":
-                    userData.setCreature((String) entry.getValue());
-                    break;
-                case "gender":
-                    userData.setGender((String) entry.getValue());
-                    break;
-                case "skinColor":
-                    userData.setSkinColor((String) entry.getValue());
-                    break;
-                case "hairstyle":
-                    userData.setHairstyle((String) entry.getValue());
-                    break;
-                case "hairColor":
-                    userData.setHairColor((String) entry.getValue());
-                    break;
-                case "eyes":
-                    userData.setEyes((String) entry.getValue());
-                    break;
-                case "outfit":
-                    userData.setOutfit((String) entry.getValue());
-                    break;
-                case "avatar":
-                    userData.setAvatar((int) entry.getValue());
-                    break;
-                }
+        for (Entry<String, Object> entry : jsonObject.entrySet()) {
+            switch (entry.getKey()) {
+            case "sceneNo":
+                userData.setSceneNo((int) entry.getValue());
+                break;
+            case "nearbySceneNos":
+                userData.setNearbySceneNos((List<Integer>) entry.getValue());
+                break;
+            case "playerX":
+                userData.setPlayerX(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerY":
+                userData.setPlayerY(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerNextX":
+                userData.setPlayerNextX(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerNextY":
+                userData.setPlayerNextY(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerSpeedX":
+                userData.setPlayerSpeedX(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerSpeedY":
+                userData.setPlayerSpeedY(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerMaxSpeedX":
+                userData.setPlayerMaxSpeedX(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerMaxSpeedY":
+                userData.setPlayerMaxSpeedY(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "acceleration":
+                userData.setAcceleration(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "playerDirection":
+                userData.setPlayerDirection((int) entry.getValue());
+                break;
+            case "firstName":
+                userData.setFirstName(entry.getValue().toString());
+                break;
+            case "lastName":
+                userData.setLastName(entry.getValue().toString());
+                break;
+            case "nickname":
+                userData.setNickname(entry.getValue().toString());
+                break;
+            case "nameColor":
+                userData.setNameColor(entry.getValue().toString());
+                break;
+            case "creature":
+                userData.setCreature(entry.getValue().toString());
+                break;
+            case "gender":
+                userData.setGender(entry.getValue().toString());
+                break;
+            case "skinColor":
+                userData.setSkinColor(entry.getValue().toString());
+                break;
+            case "hairstyle":
+                userData.setHairstyle(entry.getValue().toString());
+                break;
+            case "hairColor":
+                userData.setHairColor(entry.getValue().toString());
+                break;
+            case "eyes":
+                userData.setEyes(entry.getValue().toString());
+                break;
+            case "outfit":
+                userData.setOutfit(entry.getValue().toString());
+                break;
+            case "avatar":
+                userData.setAvatar((int) entry.getValue());
+                break;
             }
             /**
              * Update UserLocation
              */
-            if (userData.getSceneNo() != newUserDataJSONObject.getInteger("sceneNo")) {
+            if (jsonObject.containsKey("sceneNo") && userData.getSceneNo() != jsonObject.getInteger("sceneNo")) {
                 Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
                 userCodeSet.remove(userCode);
                 ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
-                userCodeSet = ServerUtil.userLocationMap.getOrDefault(newUserDataJSONObject.getInteger("sceneNo"), new ConcurrentSkipListSet<>());
+                userCodeSet = ServerUtil.userLocationMap.getOrDefault(jsonObject.getInteger("sceneNo"), new ConcurrentSkipListSet<>());
                 userCodeSet.add(userCode);
-                ServerUtil.userLocationMap.put(newUserDataJSONObject.getInteger("sceneNo"), userCodeSet);
+                ServerUtil.userLocationMap.put(jsonObject.getInteger("sceneNo"), userCodeSet);
             }
+            /**
+             * Update UserData
+             */
+            ServerUtil.userDataMap.put(userCode, userData);
         }
 
         /**
@@ -243,7 +246,8 @@ public class WebSocketController {
             }
         }
 
-        ServerUtil.sendMessage(userCode, ServerUtil.generateReplyContent(userData));
+        String content = ServerUtil.generateReplyContent(userData);
+        ServerUtil.sendMessage(userCode, content);
     }
 
     private void afterLogoff(String uuid, String token) {

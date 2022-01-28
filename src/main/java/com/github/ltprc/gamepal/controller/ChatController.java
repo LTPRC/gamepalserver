@@ -44,6 +44,7 @@ public class ChatController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message sending failed");
         }
+//        System.out.println("ChatMessage received " + type);
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setFromUuid(uuid);
         chatMessage.setToUuid(receiver);
@@ -57,10 +58,13 @@ public class ChatController {
             Set<Entry<String, Queue<ChatMessage>>> entrySet = new HashSet<>();
             entrySet.addAll(ServerUtil.chatMap.entrySet());
             for (Entry<String, Queue<ChatMessage>> entry : entrySet) {
+//                System.out.println("userCode:" + entry.getKey());
                 if (!ServerUtil.chatMap.containsKey(entry.getKey())) {
+//                    System.out.println("userCode:" + entry.getKey());
                     ServerUtil.chatMap.put((String) entry.getKey(), new ConcurrentLinkedQueue<>());
                 }
                 ServerUtil.chatMap.get(entry.getKey()).add(chatMessage);
+//                System.out.println("ChatMessage received (" + entry.getKey() + ")");
             }
             break;
         case 2:
@@ -92,6 +96,7 @@ public class ChatController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Message sending failed");
         }
+//        System.out.println("VoiceMessage received");
         VoiceMessage voiceMessage = new VoiceMessage();
         voiceMessage.setFromUuid(uuid);
         voiceMessage.setToUuid(receiver);
@@ -105,8 +110,10 @@ public class ChatController {
             Set<Entry<String, Queue<VoiceMessage>>> entrySet = new HashSet<>();
             entrySet.addAll(ServerUtil.voiceMap.entrySet());
             for (Entry<String, Queue<VoiceMessage>> entry : entrySet) {
+//                System.out.println("userCode:" + entry.getKey());
                 // 暂时也先包括自己
                 if (!ServerUtil.voiceMap.containsKey(entry.getKey())) {
+//                    System.out.println("userCode:" + entry.getKey());
                     ServerUtil.voiceMap.put((String) entry.getKey(), new ConcurrentLinkedQueue<>());
                 }
                 ServerUtil.voiceMap.get(entry.getKey()).add(voiceMessage);

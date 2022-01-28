@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.UserData;
+import com.github.ltprc.gamepal.model.map.Position;
 import com.github.ltprc.gamepal.entity.UserCharacter;
 import com.github.ltprc.gamepal.entity.UserInfo;
 import com.github.ltprc.gamepal.entity.UserOnline;
@@ -114,12 +115,12 @@ public class ServerController {
             userData.setUserCode(uuid);
             userData.setSceneNo(0); // To be determined
             userData.setNearbySceneNos(new ArrayList<>()); // To be determined
-            userData.setPlayerX(new BigDecimal(3)); // To be determined
-            userData.setPlayerY(new BigDecimal(3)); // To be determined
+            userData.setPlayerX(new BigDecimal(3.0)); // To be determined
+            userData.setPlayerY(new BigDecimal(3.0)); // To be determined
             userData.setPlayerNextX(userData.getPlayerX());
             userData.setPlayerNextY(userData.getPlayerY());
-            userData.setPlayerSpeedX(new BigDecimal(0)); // To be determined
-            userData.setPlayerSpeedY(new BigDecimal(0)); // To be determined
+            userData.setPlayerSpeedX(new BigDecimal(0.0)); // To be determined
+            userData.setPlayerSpeedY(new BigDecimal(0.0)); // To be determined
             userData.setPlayerMaxSpeedX(new BigDecimal(0.05)); // To be determined
             userData.setPlayerMaxSpeedY(new BigDecimal(0.05)); // To be determined
             userData.setAcceleration(new BigDecimal(0.01));
@@ -137,6 +138,7 @@ public class ServerController {
                 userData.setHairColor(userCharacterList.get(0).getHairColor());
                 userData.setEyes(userCharacterList.get(0).getEyes());
                 userData.setOutfit(userCharacterList.get(0).getOutfit());
+                userData.setAvatar(userCharacterList.get(0).getAvatar());
             }
             ServerUtil.userDataMap.put(uuid, userData);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
@@ -184,5 +186,28 @@ public class ServerController {
             ServerUtil.voiceMap.remove(userCode);
             ServerUtil.userDataMap.remove(userCode);
         }
+    }
+
+    @Deprecated
+    @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
+    public ResponseEntity<String> initUserData(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String userCode;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            userCode = (String) body.get("userCode");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        if (null == userData) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
+        }
+        rst.put("userData", userData);
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 }

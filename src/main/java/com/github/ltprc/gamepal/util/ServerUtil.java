@@ -54,15 +54,31 @@ public class ServerUtil {
      * @param userCode
      * @param message
      */
-    public static void sendMessageToAll(String message) {
+    public synchronized static void sendMessageToAll(String message) {
         for (Entry<String, Session> entry : sessionMap.entrySet()) {
-            entry.getValue().getAsyncRemote().sendText(message);
+            try {
+                entry.getValue().getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
+    }
+
+    public static String generateInitContent(String userCode) {
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        JSONObject rst = new JSONObject();
+        rst.put("websocketmessagetype", "init");
+        rst.put("userCode", userCode);
+        rst.put("token", ServerUtil.tokenMap.get(userCode));
+        rst.put("userData", JSON.toJSON(userData));
+        return JSONObject.toJSONString(rst);
     }
 
     public static String generateReplyContent(UserData userData) {
         String userCode = userData.getUserCode();
         JSONObject rst = new JSONObject();
+        rst.put("websocketmessagetype", "reply");
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
         List<Integer> sceneNos = new ArrayList<>();
@@ -91,18 +107,20 @@ public class ServerUtil {
         if (ServerUtil.chatMap.containsKey(userCode) && !ServerUtil.chatMap.get(userCode).isEmpty()) {
             JSONArray chatMessages = new JSONArray();
             chatMessages.addAll(ServerUtil.chatMap.get(userCode));
-            ServerUtil.chatMap.remove(userCode);
+            ServerUtil.chatMap.get(userCode).clear();;
             rst.put("chatMessages", chatMessages);
+            System.out.println("ChatMessage sent");
         }
 
         if (ServerUtil.voiceMap.containsKey(userCode) && !ServerUtil.voiceMap.get(userCode).isEmpty()) {
             JSONArray voiceMessages = new JSONArray();
             voiceMessages.addAll(ServerUtil.voiceMap.get(userCode));
-            ServerUtil.voiceMap.remove(userCode);
+            ServerUtil.voiceMap.get(userCode).clear();
             rst.put("voiceMessages", voiceMessages);
+            System.out.println("VoiceMessage sent");
         }
 
-        return JSONArray.toJSONString(rst);
+        return JSONObject.toJSONString(rst);
     }
 
     /**
@@ -110,9 +128,14 @@ public class ServerUtil {
      * @param userCode
      * @param message
      */
-    public static void sendMessage(@PathParam("userCode") String userCode, String message) {
+    public synchronized static void sendMessage(@PathParam("userCode") String userCode, String message) {
         // 向指定用户发送消息
-        sessionMap.get(userCode).getAsyncRemote().sendText(message);
+        try {
+            sessionMap.get(userCode).getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public static JSONObject strRequest2JSONObject(HttpServletRequest request) throws IOException {

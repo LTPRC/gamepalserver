@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.entity.UserCharacter;
+import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.repository.UserCharacterRepository;
 import com.github.ltprc.gamepal.util.ServerUtil;
 
@@ -50,7 +51,7 @@ public class CharacterController {
     @RequestMapping(value = "/set-user-character", method = RequestMethod.POST)
     public ResponseEntity<String> setUserCharacter(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
-        String uuid;
+        String userCode;
         UserCharacter userCharacter = new UserCharacter();
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
@@ -75,7 +76,7 @@ public class CharacterController {
             userCharacter.setEyes(body.get("eyes").toString());
             userCharacter.setOutfit(body.get("outfit").toString());
             userCharacter.setAvatar(body.getInteger("avatar"));
-            uuid = body.get("uuid").toString();
+            userCode = body.get("uuid").toString();
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
@@ -84,6 +85,19 @@ public class CharacterController {
         userCharacter.setCreateTime(sdf.format(new Date()));
         userCharacter.setUpdateTime(userCharacter.getCreateTime());
         userCharacterRepository.save(userCharacter);
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        userData.setFirstName(userCharacter.getFirstName());
+        userData.setLastName(userCharacter.getLastName());
+        userData.setNickname(userCharacter.getNickname());
+        userData.setNameColor(userCharacter.getNameColor());
+        userData.setCreature(userCharacter.getCreature());
+        userData.setGender(userCharacter.getGender());
+        userData.setSkinColor(userCharacter.getSkinColor());
+        userData.setHairstyle(userCharacter.getHairstyle());
+        userData.setHairColor(userCharacter.getHairColor());
+        userData.setEyes(userCharacter.getEyes());
+        userData.setOutfit(userCharacter.getOutfit());
+        userData.setAvatar(userCharacter.getAvatar());
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 }

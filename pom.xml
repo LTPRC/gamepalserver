@@ -13,7 +13,7 @@
 
     <groupId>com.github.ltprc.gamepal</groupId>
     <artifactId>gamepalserver</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>gamepalserver</name>
     <description>gamepalserver</description>
