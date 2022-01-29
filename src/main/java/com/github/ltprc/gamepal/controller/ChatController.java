@@ -65,6 +65,8 @@ public class ChatController {
                 }
                 ServerUtil.chatMap.get(entry.getKey()).add(chatMessage);
 //                System.out.println("ChatMessage received (" + entry.getKey() + ")");
+//                System.out.println("from (" + uuid + ")");
+//                System.out.println("to (" + receiver + ")");
             }
             break;
         case 2:
@@ -129,6 +131,7 @@ public class ChatController {
         return ResponseEntity.status(HttpStatus.OK).body("Message is sent");
     }
 
+    @Deprecated
     @RequestMapping(value = "/receive-chat", method = RequestMethod.POST)
     public ResponseEntity<String> receiveChat(HttpServletRequest request) {
         JSONObject rst = new JSONObject();

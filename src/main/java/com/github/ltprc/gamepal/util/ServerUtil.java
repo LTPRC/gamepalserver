@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.model.UserData;
+import com.github.ltprc.gamepal.model.UserStatus;
 import com.github.ltprc.gamepal.model.VoiceMessage;
 import com.github.ltprc.gamepal.model.map.Position;
 
@@ -40,6 +42,7 @@ public class ServerUtil {
 
     public final static Map<String, Session> sessionMap = new ConcurrentHashMap<>();
     public final static Map<String, UserData> userDataMap = new ConcurrentHashMap<>(); // uuid, userData
+    public final static Map<String, UserStatus> userStatusMap = new ConcurrentHashMap<>(); // uuid, userStatus
     public final static Map<Integer, Set<String>> userLocationMap = new ConcurrentHashMap<>(); // sceneNo, uuid
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queu
@@ -65,22 +68,41 @@ public class ServerUtil {
         }
     }
 
+    public static String generateLoginContent(String userCode) {
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        JSONObject rst = new JSONObject();
+        rst.put("websocketmessagetype", "login");
+        rst.put("userCode", userCode);
+        rst.put("token", ServerUtil.tokenMap.get(userCode));
+        if (StringUtils.isEmpty(userData.getNickname())) {
+            rst.put("next", "initialization");
+        } else {
+            rst.put("next", "world");
+        }
+
+        return JSONObject.toJSONString(rst);
+    }
+
     public static String generateInitContent(String userCode) {
         UserData userData = ServerUtil.userDataMap.get(userCode);
+        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
         JSONObject rst = new JSONObject();
         rst.put("websocketmessagetype", "init");
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
         rst.put("userData", JSON.toJSON(userData));
+        rst.put("userStatus", JSON.toJSON(userStatus));
         return JSONObject.toJSONString(rst);
     }
 
-    public static String generateReplyContent(UserData userData) {
-        String userCode = userData.getUserCode();
+    public static String generateReplyContent(String userCode) {
+        UserData userData = ServerUtil.userDataMap.get(userCode);
         JSONObject rst = new JSONObject();
         rst.put("websocketmessagetype", "reply");
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
+        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
+        rst.put("userStatus", JSON.toJSON(userStatus));
         List<Integer> sceneNos = new ArrayList<>();
         sceneNos.add(userData.getSceneNo());
         sceneNos.addAll(userData.getNearbySceneNos());
@@ -109,7 +131,7 @@ public class ServerUtil {
             chatMessages.addAll(ServerUtil.chatMap.get(userCode));
             ServerUtil.chatMap.get(userCode).clear();;
             rst.put("chatMessages", chatMessages);
-            System.out.println("ChatMessage sent");
+//            System.out.println("ChatMessage sent:" + userCode);
         }
 
         if (ServerUtil.voiceMap.containsKey(userCode) && !ServerUtil.voiceMap.get(userCode).isEmpty()) {
@@ -117,7 +139,7 @@ public class ServerUtil {
             voiceMessages.addAll(ServerUtil.voiceMap.get(userCode));
             ServerUtil.voiceMap.get(userCode).clear();
             rst.put("voiceMessages", voiceMessages);
-            System.out.println("VoiceMessage sent");
+//            System.out.println("VoiceMessage sent:" + userCode);
         }
 
         return JSONObject.toJSONString(rst);
@@ -131,7 +153,9 @@ public class ServerUtil {
     public synchronized static void sendMessage(@PathParam("userCode") String userCode, String message) {
         // 向指定用户发送消息
         try {
-            sessionMap.get(userCode).getBasicRemote().sendText(message);
+            if (sessionMap.containsKey(userCode)) {
+                sessionMap.get(userCode).getBasicRemote().sendText(message);
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

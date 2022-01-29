@@ -3,7 +3,6 @@ package com.github.ltprc.gamepal.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 public class UserData {
     private String userCode;
     private int sceneNo;

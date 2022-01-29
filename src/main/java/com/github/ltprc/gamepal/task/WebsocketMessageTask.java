@@ -8,6 +8,7 @@ import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.util.ServerUtil;
 
 @Component
+@Deprecated
 public class WebsocketMessageTask {
 
 //    @Scheduled(cron = "* * * * * ?")

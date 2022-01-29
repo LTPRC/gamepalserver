@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.entity.UserOnline;
 import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.model.UserData;
+import com.github.ltprc.gamepal.model.UserStatus;
 import com.github.ltprc.gamepal.model.VoiceMessage;
 import com.github.ltprc.gamepal.repository.UserOnlineRepository;
 import com.github.ltprc.gamepal.util.ServerUtil;
@@ -79,10 +81,11 @@ public class WebSocketController {
             ServerUtil.sendMessage(userCode, content);
             return;
         }
-        UserData userData = ServerUtil.userDataMap.get(userCode);
 
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
         /**
-         * Update userDatas
+         * Update userDatas and userStatus
          */
         for (Entry<String, Object> entry : jsonObject.entrySet()) {
             switch (entry.getKey()) {
@@ -158,6 +161,57 @@ public class WebSocketController {
             case "avatar":
                 userData.setAvatar((int) entry.getValue());
                 break;
+            case "hpMax":
+                userStatus.setHpMax((int) entry.getValue());
+                break;
+            case "hp":
+                userStatus.setHp((int) entry.getValue());
+                break;
+            case "vpMax":
+                userStatus.setVpMax((int) entry.getValue());
+                break;
+            case "vp":
+                userStatus.setVp((int) entry.getValue());
+                break;
+            case "hungerMax":
+                userStatus.setHungerMax((int) entry.getValue());
+                break;
+            case "hunger":
+                userStatus.setHunger((int) entry.getValue());
+                break;
+            case "thirstMax":
+                userStatus.setThirstMax((int) entry.getValue());
+                break;
+            case "thirst":
+                userStatus.setThirst((int) entry.getValue());
+                break;
+            case "level":
+                userStatus.setLevel((int) entry.getValue());
+                break;
+            case "exp":
+                userStatus.setExp((int) entry.getValue());
+                break;
+            case "expMax":
+                userStatus.setExpMax((int) entry.getValue());
+                break;
+            case "money":
+                userStatus.setMoney((int) entry.getValue());
+                break;
+            case "belongings":
+                JSONObject belongings = (JSONObject) entry.getValue();
+                Map<Integer, Integer> bMap = userStatus.getBelongings();
+                for (Entry<String, Object> bEntry : belongings.entrySet()) {
+                    bMap.put(Integer.valueOf(bEntry.getKey()), (int) bEntry.getValue());
+                }
+                break;
+            }
+            /**
+             * Check level-up
+             */
+            while (userStatus.getExp() >= userStatus.getExpMax()) {
+                userStatus.setLevel(userStatus.getLevel() + 1);
+                userStatus.setExp(userStatus.getExp() - userStatus.getExpMax());
+                userStatus.setExpMax(100 * (int) Math.pow(userStatus.getLevel(), 2));
             }
             /**
              * Update UserLocation
@@ -171,9 +225,10 @@ public class WebSocketController {
                 ServerUtil.userLocationMap.put(jsonObject.getInteger("sceneNo"), userCodeSet);
             }
             /**
-             * Update UserData
+             * Update userDataMap and userStatusMap
              */
             ServerUtil.userDataMap.put(userCode, userData);
+            ServerUtil.userStatusMap.put(userCode, userStatus);
         }
 
         /**
@@ -196,7 +251,7 @@ public class WebSocketController {
                         newMessage.setToUuid(receiver);
                         newMessage.setType(type);
                         newMessage.setContent(content);
-                        ServerUtil.chatMap.get(userCode).add(newMessage);
+                        ServerUtil.chatMap.get(userDataEntry.getValue().getUserCode()).add(newMessage);
                     }
                     break;
                 case 2:
@@ -205,7 +260,7 @@ public class WebSocketController {
                     newMessage.setToUuid(receiver);
                     newMessage.setType(type);
                     newMessage.setContent(content);
-                    ServerUtil.chatMap.get(userCode).add(newMessage);
+                    ServerUtil.chatMap.get(receiver).add(newMessage);
                     break;
                 }
             }
@@ -231,7 +286,7 @@ public class WebSocketController {
                         newMessage.setToUuid(receiver);
                         newMessage.setType(type);
                         newMessage.setContent(content);
-                        ServerUtil.voiceMap.get(userCode).add(newMessage);
+                        ServerUtil.voiceMap.get(userDataEntry.getValue().getUserCode()).add(newMessage);
                     }
                     break;
                 case 2:
@@ -240,32 +295,33 @@ public class WebSocketController {
                     newMessage.setToUuid(receiver);
                     newMessage.setType(type);
                     newMessage.setContent(content);
-                    ServerUtil.voiceMap.get(userCode).add(newMessage);
+                    ServerUtil.voiceMap.get(receiver).add(newMessage);
                     break;
                 }
             }
         }
 
-        String content = ServerUtil.generateReplyContent(userData);
+        String content = ServerUtil.generateReplyContent(userCode);
         ServerUtil.sendMessage(userCode, content);
     }
 
-    private void afterLogoff(String uuid, String token) {
-        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(uuid);
+    private void afterLogoff(String userCode, String token) {
+        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(userCode);
         if (!userOnlineList.isEmpty()) {
             userOnlineRepository.delete(userOnlineList.get(0));
         }
-        if (token.equals(ServerUtil.tokenMap.get(uuid))) {
-            ServerUtil.tokenMap.remove(uuid);
-            ServerUtil.onlineMap.remove(uuid);
-            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(uuid).getSceneNo(), new ConcurrentSkipListSet<>());
-            if (null != uuid) {
-                userCodeSet.remove(uuid);
+        if (token.equals(ServerUtil.tokenMap.get(userCode))) {
+            ServerUtil.tokenMap.remove(userCode);
+            ServerUtil.onlineMap.remove(userCode);
+            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
+            if (null != userCode) {
+                userCodeSet.remove(userCode);
             }
-            ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(uuid).getSceneNo(), userCodeSet);
-            ServerUtil.chatMap.remove(uuid);
-            ServerUtil.voiceMap.remove(uuid);
-            ServerUtil.userDataMap.remove(uuid);
+            ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
+            ServerUtil.chatMap.remove(userCode);
+            ServerUtil.voiceMap.remove(userCode);
+            ServerUtil.userDataMap.remove(userCode);
+            ServerUtil.userStatusMap.remove(userCode);
         }
     }
 }

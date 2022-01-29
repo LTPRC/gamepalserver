@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.UserData;
+import com.github.ltprc.gamepal.model.UserStatus;
 import com.github.ltprc.gamepal.model.map.Position;
 import com.github.ltprc.gamepal.entity.UserCharacter;
 import com.github.ltprc.gamepal.entity.UserInfo;
@@ -141,12 +142,26 @@ public class ServerController {
                 userData.setAvatar(userCharacterList.get(0).getAvatar());
             }
             ServerUtil.userDataMap.put(uuid, userData);
+            UserStatus userStatus = new UserStatus();
+            userStatus.setHpMax(100);
+            userStatus.setHp(userStatus.getHpMax());
+            userStatus.setVpMax(1000);
+            userStatus.setVp(userStatus.getVpMax());
+            userStatus.setHungerMax(100);
+            userStatus.setHunger(userStatus.getHungerMax());
+            userStatus.setThirstMax(100);
+            userStatus.setThirst(userStatus.getThirstMax());
+            userStatus.setLevel(1);
+            userStatus.setExp(0);
+            userStatus.setExpMax(100);
+            userStatus.setMoney(0);
+            ServerUtil.userStatusMap.put(uuid, userStatus);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
             userCodeSet.add(uuid);
             ServerUtil.userLocationMap.put(userData.getSceneNo(), userCodeSet);
             ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
-            return ResponseEntity.status(HttpStatus.OK).body(ServerUtil.generateReplyContent(userData));
+            return ResponseEntity.status(HttpStatus.OK).body(ServerUtil.generateLoginContent(uuid));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }
@@ -185,29 +200,7 @@ public class ServerController {
             ServerUtil.chatMap.remove(userCode);
             ServerUtil.voiceMap.remove(userCode);
             ServerUtil.userDataMap.remove(userCode);
+            ServerUtil.userStatusMap.remove(userCode);
         }
-    }
-
-    @Deprecated
-    @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
-    public ResponseEntity<String> initUserData(HttpServletRequest request) {
-        JSONObject rst = new JSONObject();
-        String userCode;
-        try {
-            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
-            if (null == jsonObject || !jsonObject.containsKey("body")) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
-            }
-            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            userCode = (String) body.get("userCode");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
-        }
-        UserData userData = ServerUtil.userDataMap.get(userCode);
-        if (null == userData) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
-        }
-        rst.put("userData", userData);
-        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 }
