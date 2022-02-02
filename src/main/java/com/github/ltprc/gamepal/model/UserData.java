@@ -5,10 +5,11 @@ import java.util.List;
 
 public class UserData {
     private String userCode;
-    private int sceneNo;
     private List<Integer> nearbySceneNos;
+    private int sceneNo;
     private BigDecimal playerX;
     private BigDecimal playerY;
+    private int nextSceneNo;
     private BigDecimal playerNextX;
     private BigDecimal playerNextY;
     private BigDecimal playerSpeedX;
@@ -183,5 +184,11 @@ public class UserData {
     }
     public void setAvatar(int avatar) {
         this.avatar = avatar;
+    }
+    public int getNextSceneNo() {
+        return nextSceneNo;
+    }
+    public void setNextSceneNo(int nextSceneNo) {
+        this.nextSceneNo = nextSceneNo;
     }
 }

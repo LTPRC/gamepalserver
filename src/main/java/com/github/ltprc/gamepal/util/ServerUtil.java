@@ -83,6 +83,7 @@ public class ServerUtil {
         return JSONObject.toJSONString(rst);
     }
 
+    @Deprecated
     public static String generateInitContent(String userCode) {
         UserData userData = ServerUtil.userDataMap.get(userCode);
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
@@ -108,7 +109,9 @@ public class ServerUtil {
         sceneNos.addAll(userData.getNearbySceneNos());
         Set<String> userCodes = new ConcurrentSkipListSet<>();
         for (int sceneNo : sceneNos) {
-            userCodes.addAll(ServerUtil.userLocationMap.get(sceneNo));
+            if (ServerUtil.userLocationMap.containsKey(sceneNo)) {
+                userCodes.addAll(ServerUtil.userLocationMap.get(sceneNo));
+            }
         }
         /**
          * All nearby sceneNos will be included fFrom smaller y to bigger y.

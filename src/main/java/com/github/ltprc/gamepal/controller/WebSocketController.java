@@ -48,7 +48,7 @@ public class WebSocketController {
     public void onOpen(Session session, @PathParam("userCode") String userCode) {
         ServerUtil.sessionMap.put(userCode, session);
         logger.info("建立连接成功");
-//        String content = ServerUtil.generateInitContent(userCode);
+        String content = ServerUtil.generateInitContent(userCode);
         //ServerUtil.sendMessage(userCode, content);
 //        System.out.println("Sent String: " + content);
     }
@@ -70,7 +70,8 @@ public class WebSocketController {
      */
     @OnMessage
     public void onMessage(@NonNull String message) {
-        //System.out.println("Received String (size:" + message.length() + ")");
+//        System.out.println("Received String (size:" + message.length() + ")");
+//        System.out.println("Received String:" + message);
         JSONObject jsonObject = JSONObject.parseObject(message);
         if (null == jsonObject || !jsonObject.containsKey("userCode")) {
             return;
@@ -89,17 +90,20 @@ public class WebSocketController {
          */
         for (Entry<String, Object> entry : jsonObject.entrySet()) {
             switch (entry.getKey()) {
-            case "sceneNo":
-                userData.setSceneNo((int) entry.getValue());
-                break;
             case "nearbySceneNos":
                 userData.setNearbySceneNos((List<Integer>) entry.getValue());
+                break;
+            case "sceneNo":
+                userData.setSceneNo((int) entry.getValue());
                 break;
             case "playerX":
                 userData.setPlayerX(new BigDecimal(entry.getValue().toString()));
                 break;
             case "playerY":
                 userData.setPlayerY(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "nextSceneNo":
+                userData.setNextSceneNo((int) entry.getValue());
                 break;
             case "playerNextX":
                 userData.setPlayerNextX(new BigDecimal(entry.getValue().toString()));

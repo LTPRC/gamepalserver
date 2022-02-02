@@ -114,10 +114,11 @@ public class ServerController {
             }
             UserData userData = new UserData();
             userData.setUserCode(uuid);
-            userData.setSceneNo(0); // To be determined
             userData.setNearbySceneNos(new ArrayList<>()); // To be determined
-            userData.setPlayerX(new BigDecimal(3.0)); // To be determined
-            userData.setPlayerY(new BigDecimal(3.0)); // To be determined
+            userData.setSceneNo(0); // To be determined
+            userData.setPlayerX(new BigDecimal(2.0)); // To be determined
+            userData.setPlayerY(new BigDecimal(2.0)); // To be determined
+            userData.setNextSceneNo(userData.getSceneNo());
             userData.setPlayerNextX(userData.getPlayerX());
             userData.setPlayerNextY(userData.getPlayerY());
             userData.setPlayerSpeedX(new BigDecimal(0.0)); // To be determined
@@ -145,7 +146,7 @@ public class ServerController {
             UserStatus userStatus = new UserStatus();
             userStatus.setHpMax(100);
             userStatus.setHp(userStatus.getHpMax());
-            userStatus.setVpMax(1000);
+            userStatus.setVpMax(100);
             userStatus.setVp(userStatus.getVpMax());
             userStatus.setHungerMax(100);
             userStatus.setHunger(userStatus.getHungerMax());
@@ -165,6 +166,24 @@ public class ServerController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }
+    }
+
+    @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
+    public ResponseEntity<String> initUserData(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        String userCode;
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            userCode = body.getString("userCode");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        String content = ServerUtil.generateInitContent(userCode);
+        return ResponseEntity.status(HttpStatus.OK).body(content);
     }
 
     @RequestMapping(value = "/logoff", method = RequestMethod.POST)
