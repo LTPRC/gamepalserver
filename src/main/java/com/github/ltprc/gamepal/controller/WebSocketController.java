@@ -201,12 +201,32 @@ public class WebSocketController {
             case "money":
                 userStatus.setMoney((int) entry.getValue());
                 break;
-            case "belongings":
-                JSONObject belongings = (JSONObject) entry.getValue();
-                Map<Integer, Integer> bMap = userStatus.getBelongings();
-                for (Entry<String, Object> bEntry : belongings.entrySet()) {
-                    bMap.put(Integer.valueOf(bEntry.getKey()), (int) bEntry.getValue());
+            case "items":
+                JSONObject items = (JSONObject) entry.getValue();
+                Map<String, Integer> iMap = userStatus.getItems();
+                for (Entry<String, Object> bEntry : items.entrySet()) {
+                    iMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
                 }
+                break;
+            case "capacityMax":
+                userStatus.setCapacityMax(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "capacity":
+                userStatus.setCapacity(new BigDecimal(entry.getValue().toString()));
+                break;
+            case "reservedItems":
+                JSONObject reservedItems = (JSONObject) entry.getValue();
+                Map<String, Integer> riMap = userStatus.getReservedItems();
+                for (Entry<String, Object> bEntry : reservedItems.entrySet()) {
+                    riMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
+                }
+                break;
+            case "buff":
+                userStatus.setBuff(entry.getValue().toString());
+                /**
+                 * Settle buff effect
+                 */
+                // To be continued...
                 break;
             }
             /**

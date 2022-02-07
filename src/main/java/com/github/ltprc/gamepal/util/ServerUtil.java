@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -36,6 +37,11 @@ public class ServerUtil {
     public final static String WS_PATH = "/websocket/v1";
     public final static int MAX_MESSAGE_LINE_NUM = 10;
     public final static int MAX_CHAR_NUM_PER_LINE = 100;
+
+    public final static BigDecimal PLAYER_SPEED_X_MAX = new BigDecimal(0.05);
+    public final static BigDecimal PLAYER_SPEED_X_MIN = new BigDecimal(0.01);
+    public final static BigDecimal PLAYER_SPEED_Y_MAX = new BigDecimal(0.05);
+    public final static BigDecimal PLAYER_SPEED_Y_MIN = new BigDecimal(0.01);
 
     public final static Map<String, String> tokenMap = new ConcurrentHashMap<>(); // uuid, token
     public final static LinkedHashMap<String, Long> onlineMap = new LinkedHashMap<>(); // uuid, timestamp

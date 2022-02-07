@@ -1,5 +1,6 @@
 package com.github.ltprc.gamepal.model;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,9 +54,25 @@ public class UserStatus {
      */
     private int money;
     /**
-     * 物品 (belongingsId, amount)
+     * 物品 (itemId, amount)
      */
-    private Map<Integer, Integer> belongings = new HashMap<>();
+    private Map<String, Integer> items = new HashMap<>();
+    /**
+     * 背包容量
+     */
+    private BigDecimal capacity;
+    /**
+     * 背包容量最大值
+     */
+    private BigDecimal capacityMax;
+    /**
+     * 储备物品 (itemId, amount)
+     */
+    private Map<String, Integer> reservedItems = new HashMap<>();
+    /**
+     * 特殊状态，例如"000100011"
+     */
+    private String buff;
 
     public int getHpMax() {
         return hpMax;
@@ -153,11 +170,43 @@ public class UserStatus {
         this.money = money;
     }
 
-    public Map<Integer, Integer> getBelongings() {
-        return belongings;
+    public Map<String, Integer> getItems() {
+        return items;
     }
 
-    public void setBelongings(Map<Integer, Integer> belongings) {
-        this.belongings = belongings;
+    public void setItems(Map<String, Integer> items) {
+        this.items = items;
+    }
+
+    public BigDecimal getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(BigDecimal capacity) {
+        this.capacity = capacity;
+    }
+
+    public BigDecimal getCapacityMax() {
+        return capacityMax;
+    }
+
+    public void setCapacityMax(BigDecimal capacityMax) {
+        this.capacityMax = capacityMax;
+    }
+
+    public Map<String, Integer> getReservedItems() {
+        return reservedItems;
+    }
+
+    public void setReservedItems(Map<String, Integer> reservedItems) {
+        this.reservedItems = reservedItems;
+    }
+
+    public String getBuff() {
+        return buff;
+    }
+
+    public void setBuff(String buff) {
+        this.buff = buff;
     }
 }

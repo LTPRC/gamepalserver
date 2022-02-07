@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -123,8 +124,8 @@ public class ServerController {
             userData.setPlayerNextY(userData.getPlayerY());
             userData.setPlayerSpeedX(new BigDecimal(0.0)); // To be determined
             userData.setPlayerSpeedY(new BigDecimal(0.0)); // To be determined
-            userData.setPlayerMaxSpeedX(new BigDecimal(0.05)); // To be determined
-            userData.setPlayerMaxSpeedY(new BigDecimal(0.05)); // To be determined
+            userData.setPlayerMaxSpeedX(ServerUtil.PLAYER_SPEED_X_MAX);
+            userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
             userData.setAcceleration(new BigDecimal(0.01));
             userData.setPlayerDirection(7);
             List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
@@ -156,6 +157,10 @@ public class ServerController {
             userStatus.setExp(0);
             userStatus.setExpMax(100);
             userStatus.setMoney(0);
+            userStatus.setItems(new HashMap<>());
+            userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
+            userStatus.setCapacity(null);
+            userStatus.setReservedItems(new HashMap<>());
             ServerUtil.userStatusMap.put(uuid, userStatus);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
             userCodeSet.add(uuid);
