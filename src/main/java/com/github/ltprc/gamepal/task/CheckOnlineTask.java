@@ -17,7 +17,8 @@ public class CheckOnlineTask {
 
     private static final long TIMEOUT_SECOND = 300;
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 */5 * * * ?")
+    //Temporary ignored 02/08
     public void execute() {
         if (!ServerUtil.onlineMap.isEmpty() && Instant.now().getEpochSecond() - ServerUtil.onlineMap.entrySet().iterator().next().getValue() > TIMEOUT_SECOND) {
             ServerUtil.tokenMap.remove(ServerUtil.onlineMap.entrySet().iterator().next().getKey()); // log off

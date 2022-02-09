@@ -42,6 +42,7 @@ public class ServerUtil {
     public final static BigDecimal PLAYER_SPEED_X_MIN = new BigDecimal(0.01);
     public final static BigDecimal PLAYER_SPEED_Y_MAX = new BigDecimal(0.05);
     public final static BigDecimal PLAYER_SPEED_Y_MIN = new BigDecimal(0.01);
+    public final static BigDecimal PLAYER_ACCELERATION = new BigDecimal(0.01);
 
     public final static Map<String, String> tokenMap = new ConcurrentHashMap<>(); // uuid, token
     public final static LinkedHashMap<String, Long> onlineMap = new LinkedHashMap<>(); // uuid, timestamp
@@ -51,7 +52,8 @@ public class ServerUtil {
     public final static Map<String, UserStatus> userStatusMap = new ConcurrentHashMap<>(); // uuid, userStatus
     public final static Map<Integer, Set<String>> userLocationMap = new ConcurrentHashMap<>(); // sceneNo, uuid
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
-    public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queu
+    public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
+    public final static Map<String, Map<String, UserData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
 
     /**
      * Deprecated
@@ -89,7 +91,6 @@ public class ServerUtil {
         return JSONObject.toJSONString(rst);
     }
 
-    @Deprecated
     public static String generateInitContent(String userCode) {
         UserData userData = ServerUtil.userDataMap.get(userCode);
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);

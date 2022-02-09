@@ -126,7 +126,7 @@ public class ServerController {
             userData.setPlayerSpeedY(new BigDecimal(0.0)); // To be determined
             userData.setPlayerMaxSpeedX(ServerUtil.PLAYER_SPEED_X_MAX);
             userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
-            userData.setAcceleration(new BigDecimal(0.01));
+            userData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
             userData.setPlayerDirection(7);
             List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
             if (null != userCharacterList && userCharacterList.size() > 0) {
@@ -167,6 +167,7 @@ public class ServerController {
             ServerUtil.userLocationMap.put(userData.getSceneNo(), userCodeSet);
             ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
+            ServerUtil.hqMap.put(uuid, new HashMap<>());
             return ResponseEntity.status(HttpStatus.OK).body(ServerUtil.generateLoginContent(uuid));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
@@ -175,7 +176,6 @@ public class ServerController {
 
     @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
     public ResponseEntity<String> initUserData(HttpServletRequest request) {
-        JSONObject rst = new JSONObject();
         String userCode;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
@@ -225,6 +225,7 @@ public class ServerController {
             ServerUtil.voiceMap.remove(userCode);
             ServerUtil.userDataMap.remove(userCode);
             ServerUtil.userStatusMap.remove(userCode);
+            ServerUtil.hqMap.remove(userCode);
         }
     }
 }

@@ -73,6 +73,18 @@ public class UserStatus {
      * 特殊状态，例如"000100011"
      */
     private String buff;
+    /**
+     * 成员数量上限
+     */
+    private int memberNumMax;
+    /**
+     * 伙伴详细信息散列表
+     */
+    private Map<String, UserData> palMap = new HashMap<>();
+    /**
+     * 伙伴数量上限
+     */
+    private int palNumMax;
 
     public int getHpMax() {
         return hpMax;
@@ -208,5 +220,29 @@ public class UserStatus {
 
     public void setBuff(String buff) {
         this.buff = buff;
+    }
+
+    public int getMemberNumMax() {
+        return memberNumMax;
+    }
+
+    public void setMemberNumMax(int memberNumMax) {
+        this.memberNumMax = memberNumMax;
+    }
+
+    public Map<String, UserData> getPalMap() {
+        return palMap;
+    }
+
+    public void setPalMap(Map<String, UserData> palMap) {
+        this.palMap = palMap;
+    }
+
+    public int getPalNumMax() {
+        return palNumMax;
+    }
+
+    public void setPalNumMax(int palNumMax) {
+        this.palNumMax = palNumMax;
     }
 }

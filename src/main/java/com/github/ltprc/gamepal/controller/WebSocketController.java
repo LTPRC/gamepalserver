@@ -1,6 +1,7 @@
 package com.github.ltprc.gamepal.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -227,6 +228,20 @@ public class WebSocketController {
                  * Settle buff effect
                  */
                 // To be continued...
+                break;
+            case "memberNumMax":
+                userStatus.setMemberNumMax((int) entry.getValue());
+                break;
+//            case "palCodeList": // Not here!
+//                JSONObject palCodeListJSON = (JSONObject) entry.getValue();
+//                List<String> palCodeList = new ArrayList<>();
+//                for (Entry<String, Object> pEntry : palCodeListJSON.entrySet()) {
+//                    palCodeList.add(pEntry.getValue().toString());
+//                }
+//                userStatus.setPalCodeList(palCodeList);
+//                break;
+            case "palNumMax":
+                userStatus.setPalNumMax((int) entry.getValue());
                 break;
             }
             /**
