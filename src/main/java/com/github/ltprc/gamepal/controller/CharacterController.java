@@ -74,7 +74,6 @@ public class CharacterController {
             userCharacter.setHairstyle(body.get("hairstyle").toString());
             userCharacter.setHairColor(body.get("hairColor").toString());
             userCharacter.setEyes(body.get("eyes").toString());
-            userCharacter.setOutfit(body.get("outfit").toString());
             userCharacter.setAvatar(body.getInteger("avatar"));
             userCode = body.get("uuid").toString();
         } catch (IOException e) {
@@ -82,8 +81,17 @@ public class CharacterController {
         }
         SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
         sdf.applyPattern("yyyy-MM-dd HH:mm:ss");// a为am/pm的标记
-        userCharacter.setCreateTime(sdf.format(new Date()));
-        userCharacter.setUpdateTime(userCharacter.getCreateTime());
+        if (userCharacterRepository.queryUserCharacterByUuid(userCode).isEmpty()) {
+            userCharacter.setOutfit("");
+            userCharacter.setCreateTime(sdf.format(new Date()));
+            userCharacter.setUpdateTime(userCharacter.getCreateTime());
+        } else {
+            UserCharacter existedUserCharacter = userCharacterRepository.queryUserCharacterByUuid(userCode).get(0);
+            userCharacter.setOutfit(existedUserCharacter.getOutfit());
+            userCharacter.setCreateTime(existedUserCharacter.getCreateTime());
+            userCharacter.setUpdateTime(sdf.format(new Date()));
+            userCharacterRepository.delete(existedUserCharacter);
+        }
         userCharacterRepository.save(userCharacter);
         UserData userData = ServerUtil.userDataMap.get(userCode);
         userData.setFirstName(userCharacter.getFirstName());

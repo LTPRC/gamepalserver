@@ -76,37 +76,9 @@ public class ServerUtil {
         }
     }
 
-    public static String generateLoginContent(String userCode) {
-        UserData userData = ServerUtil.userDataMap.get(userCode);
-        JSONObject rst = new JSONObject();
-        rst.put("websocketmessagetype", "login");
-        rst.put("userCode", userCode);
-        rst.put("token", ServerUtil.tokenMap.get(userCode));
-        if (StringUtils.isEmpty(userData.getNickname())) {
-            rst.put("next", "initialization");
-        } else {
-            rst.put("next", "world");
-        }
-
-        return JSONObject.toJSONString(rst);
-    }
-
-    public static String generateInitContent(String userCode) {
-        UserData userData = ServerUtil.userDataMap.get(userCode);
-        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
-        JSONObject rst = new JSONObject();
-        rst.put("websocketmessagetype", "init");
-        rst.put("userCode", userCode);
-        rst.put("token", ServerUtil.tokenMap.get(userCode));
-        rst.put("userData", JSON.toJSON(userData));
-        rst.put("userStatus", JSON.toJSON(userStatus));
-        return JSONObject.toJSONString(rst);
-    }
-
     public static String generateReplyContent(String userCode) {
         UserData userData = ServerUtil.userDataMap.get(userCode);
         JSONObject rst = new JSONObject();
-        rst.put("websocketmessagetype", "reply");
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);

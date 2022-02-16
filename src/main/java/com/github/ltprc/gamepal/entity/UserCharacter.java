@@ -10,9 +10,9 @@ import javax.persistence.Id;
 public class UserCharacter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, updatable = true)
     private Long id;
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "uuid", nullable = false, updatable = true)
     private String uuid;
     @Column(name = "firstName")
     private String firstName;

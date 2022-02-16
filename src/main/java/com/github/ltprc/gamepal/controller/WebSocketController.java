@@ -49,9 +49,6 @@ public class WebSocketController {
     public void onOpen(Session session, @PathParam("userCode") String userCode) {
         ServerUtil.sessionMap.put(userCode, session);
         logger.info("建立连接成功");
-        String content = ServerUtil.generateInitContent(userCode);
-        //ServerUtil.sendMessage(userCode, content);
-//        System.out.println("Sent String: " + content);
     }
 
     /**
@@ -78,11 +75,6 @@ public class WebSocketController {
             return;
         }
         String userCode = jsonObject.getString("userCode").toString();
-        if (jsonObject.containsKey("initFlag")) {
-            String content = ServerUtil.generateInitContent(userCode);
-            ServerUtil.sendMessage(userCode, content);
-            return;
-        }
 
         UserData userData = ServerUtil.userDataMap.get(userCode);
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
@@ -164,43 +156,43 @@ public class WebSocketController {
                 userData.setOutfit(entry.getValue().toString());
                 break;
             case "avatar":
-                userData.setAvatar((int) entry.getValue());
+                userData.setAvatar(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "hpMax":
-                userStatus.setHpMax((int) entry.getValue());
+                userStatus.setHpMax(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "hp":
-                userStatus.setHp((int) entry.getValue());
+                userStatus.setHp(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "vpMax":
-                userStatus.setVpMax((int) entry.getValue());
+                userStatus.setVpMax(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "vp":
-                userStatus.setVp((int) entry.getValue());
+                userStatus.setVp(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "hungerMax":
-                userStatus.setHungerMax((int) entry.getValue());
+                userStatus.setHungerMax(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "hunger":
-                userStatus.setHunger((int) entry.getValue());
+                userStatus.setHunger(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "thirstMax":
-                userStatus.setThirstMax((int) entry.getValue());
+                userStatus.setThirstMax(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "thirst":
-                userStatus.setThirst((int) entry.getValue());
+                userStatus.setThirst(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "level":
-                userStatus.setLevel((int) entry.getValue());
+                userStatus.setLevel(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "exp":
-                userStatus.setExp((int) entry.getValue());
+                userStatus.setExp(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "expMax":
-                userStatus.setExpMax((int) entry.getValue());
+                userStatus.setExpMax(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "money":
-                userStatus.setMoney((int) entry.getValue());
+                userStatus.setMoney(Integer.parseInt(entry.getValue().toString()));
                 break;
             case "items":
                 JSONObject items = (JSONObject) entry.getValue();

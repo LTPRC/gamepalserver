@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.model.UserStatus;
@@ -145,21 +146,21 @@ public class ServerController {
             }
             ServerUtil.userDataMap.put(uuid, userData);
             UserStatus userStatus = new UserStatus();
-            userStatus.setHpMax(100);
+            userStatus.setHpMax(100); // To be determined
             userStatus.setHp(userStatus.getHpMax());
-            userStatus.setVpMax(100);
+            userStatus.setVpMax(1000); // To be determined
             userStatus.setVp(userStatus.getVpMax());
-            userStatus.setHungerMax(100);
+            userStatus.setHungerMax(100); // To be determined
             userStatus.setHunger(userStatus.getHungerMax());
-            userStatus.setThirstMax(100);
+            userStatus.setThirstMax(100); // To be determined
             userStatus.setThirst(userStatus.getThirstMax());
             userStatus.setLevel(1);
             userStatus.setExp(0);
-            userStatus.setExpMax(100);
+            userStatus.setExpMax(100); // To be determined
             userStatus.setMoney(0);
             userStatus.setItems(new HashMap<>());
             userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
-            userStatus.setCapacity(null);
+            userStatus.setCapacity(new BigDecimal(0));
             userStatus.setReservedItems(new HashMap<>());
             ServerUtil.userStatusMap.put(uuid, userStatus);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
@@ -168,7 +169,10 @@ public class ServerController {
             ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.hqMap.put(uuid, new HashMap<>());
-            return ResponseEntity.status(HttpStatus.OK).body(ServerUtil.generateLoginContent(uuid));
+            JSONObject rst = new JSONObject();
+            rst.put("userCode", uuid);
+            rst.put("token", ServerUtil.tokenMap.get(uuid));
+            return ResponseEntity.status(HttpStatus.OK).body(JSONObject.toJSONString(rst));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
         }
@@ -187,8 +191,14 @@ public class ServerController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
-        String content = ServerUtil.generateInitContent(userCode);
-        return ResponseEntity.status(HttpStatus.OK).body(content);
+        UserData userData = ServerUtil.userDataMap.get(userCode);
+        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
+        JSONObject rst = new JSONObject();
+        rst.put("userCode", userCode);
+        rst.put("token", ServerUtil.tokenMap.get(userCode));
+        rst.put("userData", JSON.toJSON(userData));
+        rst.put("userStatus", JSON.toJSON(userStatus));
+        return ResponseEntity.status(HttpStatus.OK).body(JSONObject.toJSONString(rst));
     }
 
     @RequestMapping(value = "/logoff", method = RequestMethod.POST)
