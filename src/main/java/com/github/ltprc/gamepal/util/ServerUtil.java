@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.ChatMessage;
+import com.github.ltprc.gamepal.model.ClassicalPosition;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.model.UserStatus;
 import com.github.ltprc.gamepal.model.VoiceMessage;
@@ -54,6 +55,7 @@ public class ServerUtil {
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
     public final static Map<String, Map<String, UserData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
+    public final static Map<ClassicalPosition, Map<String, Integer>> packetMap = new ConcurrentHashMap<>(); // position, preservedItems map
 
     /**
      * Deprecated

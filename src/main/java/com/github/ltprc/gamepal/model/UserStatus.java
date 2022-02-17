@@ -68,7 +68,7 @@ public class UserStatus {
     /**
      * 储备物品 (itemId, amount)
      */
-    private Map<String, Integer> reservedItems = new HashMap<>();
+    private Map<String, Integer> preservedItems = new HashMap<>();
     /**
      * 特殊状态，例如"000100011"
      */
@@ -206,20 +206,20 @@ public class UserStatus {
         this.capacityMax = capacityMax;
     }
 
-    public Map<String, Integer> getReservedItems() {
-        return reservedItems;
-    }
-
-    public void setReservedItems(Map<String, Integer> reservedItems) {
-        this.reservedItems = reservedItems;
-    }
-
     public String getBuff() {
         return buff;
     }
 
     public void setBuff(String buff) {
         this.buff = buff;
+    }
+
+    public Map<String, Integer> getPreservedItems() {
+        return preservedItems;
+    }
+
+    public void setPreservedItems(Map<String, Integer> preservedItems) {
+        this.preservedItems = preservedItems;
     }
 
     public int getMemberNumMax() {

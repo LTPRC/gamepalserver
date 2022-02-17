@@ -161,7 +161,7 @@ public class ServerController {
             userStatus.setItems(new HashMap<>());
             userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
             userStatus.setCapacity(new BigDecimal(0));
-            userStatus.setReservedItems(new HashMap<>());
+            userStatus.setPreservedItems(new HashMap<>());
             ServerUtil.userStatusMap.put(uuid, userStatus);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
             userCodeSet.add(uuid);

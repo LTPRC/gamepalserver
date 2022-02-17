@@ -207,10 +207,10 @@ public class WebSocketController {
             case "capacity":
                 userStatus.setCapacity(new BigDecimal(entry.getValue().toString()));
                 break;
-            case "reservedItems":
-                JSONObject reservedItems = (JSONObject) entry.getValue();
-                Map<String, Integer> riMap = userStatus.getReservedItems();
-                for (Entry<String, Object> bEntry : reservedItems.entrySet()) {
+            case "preservedItems":
+                JSONObject preservedItems = (JSONObject) entry.getValue();
+                Map<String, Integer> riMap = userStatus.getPreservedItems();
+                for (Entry<String, Object> bEntry : preservedItems.entrySet()) {
                     riMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
                 }
                 break;
