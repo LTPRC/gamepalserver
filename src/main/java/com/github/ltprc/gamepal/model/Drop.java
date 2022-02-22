@@ -2,20 +2,21 @@ package com.github.ltprc.gamepal.model;
 
 import java.math.BigDecimal;
 
-public class ClassicalPosition {
+public class Drop extends ClassicalPosition {
 
-    protected int sceneNo;
-    protected BigDecimal x;
-    protected BigDecimal y;
+    protected String itemNo;
+    protected int amount;
 
-    public ClassicalPosition() {
+    public Drop() {
     }
 
-    public ClassicalPosition(int sceneNo, BigDecimal x, BigDecimal y) {
+    public Drop(int sceneNo, BigDecimal x, BigDecimal y, String itemNo, int amount) {
         super();
         this.sceneNo = sceneNo;
         this.x = x;
         this.y = y;
+        this.itemNo = itemNo;
+        this.amount = amount;
     }
 
     public int getSceneNo() {
@@ -40,5 +41,21 @@ public class ClassicalPosition {
 
     public void setY(BigDecimal y) {
         this.y = y;
+    }
+
+    public String getItemNo() {
+        return itemNo;
+    }
+
+    public void setItemNo(String itemNo) {
+        this.itemNo = itemNo;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }
