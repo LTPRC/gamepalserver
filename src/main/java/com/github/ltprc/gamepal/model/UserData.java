@@ -32,7 +32,8 @@ public class UserData {
     private String hairstyle;
     private String hairColor;
     private String eyes;
-    private String outfit;
+    private List<String> tools;
+    private List<String> outfits;
     private int avatar;
 
     public String getUserCode() {
@@ -173,11 +174,17 @@ public class UserData {
     public void setEyes(String eyes) {
         this.eyes = eyes;
     }
-    public String getOutfit() {
-        return outfit;
+    public List<String> getTools() {
+        return tools;
     }
-    public void setOutfit(String outfit) {
-        this.outfit = outfit;
+    public void setTools(List<String> tools) {
+        this.tools = tools;
+    }
+    public List<String> getOutfits() {
+        return outfits;
+    }
+    public void setOutfits(List<String> outfits) {
+        this.outfits = outfits;
     }
     public int getAvatar() {
         return avatar;

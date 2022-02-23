@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -129,6 +130,7 @@ public class ServerController {
             userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
             userData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
             userData.setPlayerDirection(7);
+            userData.setTools(new ArrayList<>());
             List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
             if (null != userCharacterList && userCharacterList.size() > 0) {
                 userData.setFirstName(userCharacterList.get(0).getFirstName());
@@ -141,7 +143,7 @@ public class ServerController {
                 userData.setHairstyle(userCharacterList.get(0).getHairstyle());
                 userData.setHairColor(userCharacterList.get(0).getHairColor());
                 userData.setEyes(userCharacterList.get(0).getEyes());
-                userData.setOutfit(userCharacterList.get(0).getOutfit());
+                userData.setOutfits(Arrays.asList(userCharacterList.get(0).getOutfit(), ","));
                 userData.setAvatar(userCharacterList.get(0).getAvatar());
             }
             ServerUtil.userDataMap.put(uuid, userData);

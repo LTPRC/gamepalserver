@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,8 +153,11 @@ public class WebSocketController {
             case "eyes":
                 userData.setEyes(entry.getValue().toString());
                 break;
-            case "outfit":
-                userData.setOutfit(entry.getValue().toString());
+            case "tools":
+                userData.setTools(Arrays.asList(entry.getValue().toString(), ","));
+                break;
+            case "outfits":
+                userData.setOutfits(Arrays.asList(entry.getValue().toString(), ","));
                 break;
             case "avatar":
                 userData.setAvatar(Integer.parseInt(entry.getValue().toString()));

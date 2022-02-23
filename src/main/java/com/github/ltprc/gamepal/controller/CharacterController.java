@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -104,7 +105,7 @@ public class CharacterController {
         userData.setHairstyle(userCharacter.getHairstyle());
         userData.setHairColor(userCharacter.getHairColor());
         userData.setEyes(userCharacter.getEyes());
-        userData.setOutfit(userCharacter.getOutfit());
+        userData.setOutfits(Arrays.asList(userCharacter.getOutfit(), ","));
         userData.setAvatar(userCharacter.getAvatar());
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }

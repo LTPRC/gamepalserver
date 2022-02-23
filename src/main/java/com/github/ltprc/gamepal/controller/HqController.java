@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
@@ -89,7 +90,8 @@ public class HqController {
             memberData.setHairColor(hairColor);
             String eyes = String.valueOf(random.nextInt(12) + 1);
             memberData.setEyes(eyes);
-            memberData.setOutfit("1");
+            memberData.setTools(new ArrayList<>());
+            memberData.setOutfits(new ArrayList<>());
             memberData.setAvatar(1);
             ServerUtil.hqMap.get(userCode).put(memberCode, memberData);
         } catch (IOException e) {
