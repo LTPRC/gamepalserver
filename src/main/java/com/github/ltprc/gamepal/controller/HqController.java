@@ -2,9 +2,10 @@ package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ltprc.gamepal.model.MemberData;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.util.NameUtil;
 import com.github.ltprc.gamepal.util.ServerUtil;
@@ -34,33 +36,20 @@ public class HqController {
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             String userCode = body.get("userCode").toString();
-            Map<String, UserData> memberMap = ServerUtil.hqMap.get(userCode);
+            Map<String, MemberData> memberMap = ServerUtil.hqMap.get(userCode);
             if (memberMap.size() >= ServerUtil.userStatusMap.get(userCode).getMemberNumMax()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Member map is full");
             }
-            UserData userData = ServerUtil.userDataMap.get(userCode);
-            UserData memberData = new UserData();
-            String memberCode = userCode + "-" + memberMap.size();
-            memberData.setUserCode(memberCode);
-            memberData.setSceneNo(userData.getSceneNo());
-            memberData.setPlayerX(userData.getPlayerX());
-            memberData.setPlayerY(userData.getPlayerY());
-            memberData.setNextSceneNo(userData.getSceneNo());
-            memberData.setPlayerNextX(userData.getPlayerX());
-            memberData.setPlayerNextY(userData.getPlayerY());
-            memberData.setPlayerSpeedX(new BigDecimal(0.0));
-            memberData.setPlayerSpeedY(new BigDecimal(0.0));
-            memberData.setPlayerMaxSpeedX(ServerUtil.PLAYER_SPEED_X_MAX);
-            memberData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
-            memberData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
-            memberData.setPlayerDirection(userData.getPlayerDirection());
+            MemberData memberData = new MemberData();
+            String memberCode = UUID.randomUUID().toString();
+            memberData.setMemberCode(memberCode);
+            memberData.setUserCode(userCode);
             double r = Math.random();
             String gender = r < 0.5D ? NameUtil.GENDER_MALE : NameUtil.GENDER_FEMALE;
             String[] names = NameUtil.generateNames("", gender);
             memberData.setFirstName(names[0]);
             memberData.setLastName(names[1]);
             memberData.setNickname(names[3]);
-            memberData.setNameColor(userData.getNameColor());
             memberData.setCreature("1");
             memberData.setGender(gender);
             r = Math.random();
@@ -90,9 +79,20 @@ public class HqController {
             memberData.setHairColor(hairColor);
             String eyes = String.valueOf(random.nextInt(12) + 1);
             memberData.setEyes(eyes);
-            memberData.setTools(new ArrayList<>());
-            memberData.setOutfits(new ArrayList<>());
+            memberData.setTools(new HashSet<>());
+            memberData.setOutfits(new HashSet<>());
             memberData.setAvatar(1);
+            memberData.setHpMax(100); // To be determined
+            memberData.setHp(memberData.getHpMax());
+            memberData.setVpMax(1000); // To be determined
+            memberData.setVp(memberData.getVpMax());
+            memberData.setHungerMax(100); // To be determined
+            memberData.setHunger(memberData.getHungerMax());
+            memberData.setThirstMax(100); // To be determined
+            memberData.setThirst(memberData.getThirstMax());
+            memberData.setLevel(1);
+            memberData.setExp(0);
+            memberData.setExpMax(100); // To be determined
             ServerUtil.hqMap.get(userCode).put(memberCode, memberData);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
@@ -110,11 +110,11 @@ public class HqController {
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             String userCode = body.get("userCode").toString();
-            Map<String, UserData> memberMap = ServerUtil.hqMap.get(userCode);
-            if (memberMap.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Member map is empty");
-            }
+            Map<String, MemberData> memberMap = ServerUtil.hqMap.get(userCode);
             String memberCode = body.get("memberCode").toString();
+            if (!memberMap.containsKey(memberCode)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
+            }
             ServerUtil.hqMap.get(userCode).remove(memberCode);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
@@ -122,6 +122,7 @@ public class HqController {
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 
+    @Deprecated
     @RequestMapping(value = "/insert-pal", method = RequestMethod.POST)
     public ResponseEntity<String> insertPal(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
@@ -142,8 +143,9 @@ public class HqController {
             if (!ServerUtil.hqMap.get(userCode).containsKey(palCode)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pal is not found from member map");
             }
-            UserData memberData = ServerUtil.hqMap.get(userCode).get(palCode);
-            ServerUtil.userDataMap.put(palCode, memberData);
+            MemberData memberData = ServerUtil.hqMap.get(userCode).get(palCode);
+//            ServerUtil.userDataMap.put(palCode, memberData);
+            // To be continued
             rst.put(palCode, JSON.toJSON(memberData));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
@@ -151,6 +153,7 @@ public class HqController {
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
 
+    @Deprecated
     @RequestMapping(value = "/delete-pal", method = RequestMethod.POST)
     public ResponseEntity<String> deletePal(HttpServletRequest request) {
         JSONObject rst = new JSONObject();

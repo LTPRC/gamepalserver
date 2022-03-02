@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.model.Drop;
+import com.github.ltprc.gamepal.model.MemberData;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.model.UserStatus;
 import com.github.ltprc.gamepal.model.VoiceMessage;
@@ -53,7 +54,7 @@ public class ServerUtil {
     public final static Map<Integer, Set<String>> userLocationMap = new ConcurrentHashMap<>(); // sceneNo, uuid
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
-    public final static Map<String, Map<String, UserData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
+    public final static Map<String, Map<String, MemberData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
     public final static Map<Integer, Drop> dropMap = new ConcurrentHashMap<>(); // dropNo, drop
     public final static int DROP_NO_MIN = 1;
     public static int dropNo = DROP_NO_MIN;

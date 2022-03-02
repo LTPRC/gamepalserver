@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,7 +132,7 @@ public class ServerController {
             userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
             userData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
             userData.setPlayerDirection(7);
-            userData.setTools(new ArrayList<>());
+            userData.setTools(new HashSet<>());
             List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
             if (null != userCharacterList && userCharacterList.size() > 0) {
                 userData.setFirstName(userCharacterList.get(0).getFirstName());
@@ -143,7 +145,15 @@ public class ServerController {
                 userData.setHairstyle(userCharacterList.get(0).getHairstyle());
                 userData.setHairColor(userCharacterList.get(0).getHairColor());
                 userData.setEyes(userCharacterList.get(0).getEyes());
-                userData.setOutfits(Arrays.asList(userCharacterList.get(0).getOutfit(), ","));
+                String outfitsStr = userCharacterList.get(0).getOutfit();
+                Set<String> outfits = new HashSet<>();
+                if (StringUtils.isNotBlank(outfitsStr)) {
+                    String[] outfitsStrs = userCharacterList.get(0).getOutfit().split(",");
+                    for (String str : outfitsStrs) {
+                        outfits.add(str);
+                    }
+                }
+                userData.setOutfits(outfits);
                 userData.setAvatar(userCharacterList.get(0).getAvatar());
             }
             ServerUtil.userDataMap.put(uuid, userData);

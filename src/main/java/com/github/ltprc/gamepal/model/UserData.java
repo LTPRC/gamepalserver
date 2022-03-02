@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.model;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public class UserData {
     private String userCode;
@@ -32,8 +33,8 @@ public class UserData {
     private String hairstyle;
     private String hairColor;
     private String eyes;
-    private List<String> tools;
-    private List<String> outfits;
+    private Set<String> tools;
+    private Set<String> outfits;
     private int avatar;
 
     public String getUserCode() {
@@ -174,16 +175,16 @@ public class UserData {
     public void setEyes(String eyes) {
         this.eyes = eyes;
     }
-    public List<String> getTools() {
+    public Set<String> getTools() {
         return tools;
     }
-    public void setTools(List<String> tools) {
+    public void setTools(Set<String> tools) {
         this.tools = tools;
     }
-    public List<String> getOutfits() {
+    public Set<String> getOutfits() {
         return outfits;
     }
-    public void setOutfits(List<String> outfits) {
+    public void setOutfits(Set<String> outfits) {
         this.outfits = outfits;
     }
     public int getAvatar() {

@@ -3,6 +3,7 @@ package com.github.ltprc.gamepal.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,10 +155,20 @@ public class WebSocketController {
                 userData.setEyes(entry.getValue().toString());
                 break;
             case "tools":
-                userData.setTools(Arrays.asList(entry.getValue().toString(), ","));
+                JSONArray toolsJSONArray = JSONArray.parseArray(entry.getValue().toString());
+                Set<String> tools = new HashSet<>();
+                for (Object str : toolsJSONArray) {
+                    tools.add((String) str);
+                }
+                userData.setTools(tools);
                 break;
             case "outfits":
-                userData.setOutfits(Arrays.asList(entry.getValue().toString(), ","));
+                JSONArray outfitsJSONArray = JSONArray.parseArray(entry.getValue().toString());
+                Set<String> outfits = new HashSet<>();
+                for (Object str : outfitsJSONArray) {
+                    outfits.add((String) str);
+                }
+                userData.setOutfits(outfits);
                 break;
             case "avatar":
                 userData.setAvatar(Integer.parseInt(entry.getValue().toString()));

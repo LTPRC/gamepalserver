@@ -38,7 +38,7 @@ public class UserStatus {
      */
     private int thirstMax;
     /**
-     * 等级活力值
+     * 等级
      */
     private int level;
     /**

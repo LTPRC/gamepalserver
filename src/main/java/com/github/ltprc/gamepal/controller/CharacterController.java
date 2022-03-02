@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -105,7 +107,15 @@ public class CharacterController {
         userData.setHairstyle(userCharacter.getHairstyle());
         userData.setHairColor(userCharacter.getHairColor());
         userData.setEyes(userCharacter.getEyes());
-        userData.setOutfits(Arrays.asList(userCharacter.getOutfit(), ","));
+        String outfitsStr = userCharacter.getOutfit();
+        Set<String> outfits = new HashSet<>();
+        if (StringUtils.isNotBlank(outfitsStr)) {
+            String[] outfitsStrs = userCharacter.getOutfit().split(",");
+            for (String str : outfitsStrs) {
+                outfits.add(str);
+            }
+        }
+        userData.setOutfits(outfits);
         userData.setAvatar(userCharacter.getAvatar());
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
     }
