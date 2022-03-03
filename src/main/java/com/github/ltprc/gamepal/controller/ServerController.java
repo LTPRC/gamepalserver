@@ -174,6 +174,7 @@ public class ServerController {
             userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
             userStatus.setCapacity(new BigDecimal(0));
             userStatus.setPreservedItems(new HashMap<>());
+            userStatus.setMemberNumMax(100); // To be determined
             ServerUtil.userStatusMap.put(uuid, userStatus);
             Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
             userCodeSet.add(uuid);
@@ -181,6 +182,7 @@ public class ServerController {
             ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
             ServerUtil.hqMap.put(uuid, new HashMap<>());
+            ServerUtil.relationMap.put(uuid, new HashMap<>());
             JSONObject rst = new JSONObject();
             rst.put("userCode", uuid);
             rst.put("token", ServerUtil.tokenMap.get(uuid));

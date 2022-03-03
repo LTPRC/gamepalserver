@@ -350,24 +350,4 @@ public class WebSocketController {
         String content = ServerUtil.generateReplyContent(userCode);
         ServerUtil.sendMessage(userCode, content);
     }
-
-    private void afterLogoff(String userCode, String token) {
-        List<UserOnline> userOnlineList = userOnlineRepository.queryUserOnlineByUuid(userCode);
-        if (!userOnlineList.isEmpty()) {
-            userOnlineRepository.delete(userOnlineList.get(0));
-        }
-        if (token.equals(ServerUtil.tokenMap.get(userCode))) {
-            ServerUtil.tokenMap.remove(userCode);
-            ServerUtil.onlineMap.remove(userCode);
-            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
-            if (null != userCode) {
-                userCodeSet.remove(userCode);
-            }
-            ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
-            ServerUtil.chatMap.remove(userCode);
-            ServerUtil.voiceMap.remove(userCode);
-            ServerUtil.userDataMap.remove(userCode);
-            ServerUtil.userStatusMap.remove(userCode);
-        }
-    }
 }

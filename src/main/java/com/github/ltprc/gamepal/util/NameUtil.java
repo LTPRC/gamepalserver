@@ -18,10 +18,11 @@ public class NameUtil {
             "钟", "姜", "崔", "谭", "陆", "范", "汪", "廖", "石", "金", "韦", "贾", "夏", "付", "方", "邹", "熊", "白", "孟", "秦", "邱",
             "侯", "江", "尹", "薛", "闫", "段", "雷", "龙", "黎", "史", "陶", "毛", "贺", "郝", "顾", "龚", "邵", "万", "覃", "武", "钱",
             "戴", "严", "欧", "莫", "孔", "向" };
-    public final static int[] chineseLastnameWeights = new int[] { 173, 152, 131, 126, 121, 118, 117, 115, 105, 86, 84,
-            81, 78, 72, 68, 65, 64, 62, 61, 59, 57, 57, 54, 54, 54, 51, 50, 50, 49, 47, 47, 47, 47, 46, 45, 42, 42, 42,
-            42, 41, 41, 41, 40, 39, 39, 38, 37, 37, 37, 36, 36, 36, 35, 35, 34, 34, 33, 32, 32, 31, 30, 29, 29, 28, 28,
-            27, 27, 26, 26, 25, 25, 25, 24, 24, 24, 24, 23, 23, 22, 19, 19, 19, 19, 18, 18, 18, 18, 18, 17, 17 };
+    public final static int[] chineseLastnameWeights = new int[] { 794, 741, 707, 538, 453, 308, 229, 223, 212, 205,
+            173, 152, 131, 126, 121, 118, 117, 115, 105, 86, 84, 81, 78, 72, 68, 65, 64, 62, 61, 59, 57, 57, 54, 54, 54,
+            51, 50, 50, 49, 47, 47, 47, 47, 46, 45, 42, 42, 42, 42, 41, 41, 41, 40, 39, 39, 38, 37, 37, 37, 36, 36, 36,
+            35, 35, 34, 34, 33, 32, 32, 31, 30, 29, 29, 28, 28, 27, 27, 26, 26, 25, 25, 25, 24, 24, 24, 24, 23, 23, 22,
+            19, 19, 19, 19, 18, 18, 18, 18, 18, 17, 17 };
     public final static String[] chineseMaleFirstnames = new String[] { "英", "华", "玉", "秀", "文", "明", "兰", "金", "国",
             "春", "丹", "忠", "小", "梓", "云", "方", "平", "海", "正", "荣", "雨", "宇", "航", "之", "天", "可", "吉", "子", "豪", "辛",
             "易", "于", "昊", "浩", "杰", "铁", "捷", "云", "峰", "信", "龙", "虎", "林", "功", "乔", "笑", "一", "立", "涛", "诚", "韬",
@@ -121,7 +122,7 @@ public class NameUtil {
         case ORIGIN_INTERNATIONAL:
             return generateInternationalNames(gender);
         }
-        return new String[]{"", "佚名", "佚名"};
+        return new String[] { "", "佚名", "佚名" };
     }
 
     public static String[] generateChineseNames(String gender) {
@@ -129,18 +130,18 @@ public class NameUtil {
         String firstName = generateChineseFirstname(gender);
         double r = Math.random();
         if (r < 0.01D) {
-            return new String[] {firstName + firstName, lastName, lastName + firstName + firstName};
+            return new String[] { firstName + firstName, lastName, lastName + firstName + firstName };
         } else if (r < 0.5D) {
-            return new String[] {firstName, lastName, lastName + firstName};
+            return new String[] { firstName, lastName, lastName + firstName };
         } else {
             String firstName2 = generateChineseFirstname(gender);
-            return new String[] {firstName + firstName2, lastName, lastName + firstName + firstName2};
+            return new String[] { firstName + firstName2, lastName, lastName + firstName + firstName2 };
         }
     }
 
     public static String generateChineseLastname() {
         Random random = new Random();
-        int num = random.nextInt(1000);
+        int num = random.nextInt(10000);
         for (int i = 0; i < chineseLastnames.length; i++) {
             if (num < chineseLastnameWeights[i]) {
                 return chineseLastnames[i];
@@ -148,7 +149,7 @@ public class NameUtil {
                 num -= chineseLastnameWeights[i];
             }
         }
-        return "";
+        return chineseLastnames[random.nextInt(100)];
     }
 
     public static String generateChineseFirstname(String gender) {
@@ -164,7 +165,7 @@ public class NameUtil {
     public static String[] generateJapaneseNames(String gender) {
         String lastName = generateJapaneseLastname();
         String firstName = generateJapaneseFirstname(gender);
-        return new String[] {firstName, lastName, lastName + firstName};
+        return new String[] { firstName, lastName, lastName + firstName };
     }
 
     public static String generateJapaneseLastname() {
@@ -186,7 +187,7 @@ public class NameUtil {
     public static String[] generateInternationalNames(String gender) {
         String lastName = generateInternationalLastname();
         String firstName = generateInternationalFirstname(gender);
-        return new String[] {firstName, lastName, firstName + "·" + lastName};
+        return new String[] { firstName, lastName, firstName + "·" + lastName };
     }
 
     public static String generateInternationalLastname() {

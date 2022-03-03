@@ -1,7 +1,7 @@
 package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -18,13 +18,30 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.MemberData;
-import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.util.NameUtil;
 import com.github.ltprc.gamepal.util.ServerUtil;
 
 @RestController
 @RequestMapping(ServerUtil.API_PATH)
 public class HqController {
+
+    @RequestMapping(value = "/get-members", method = RequestMethod.POST)
+    public ResponseEntity<String> getMembers(HttpServletRequest request) {
+        JSONObject rst = new JSONObject();
+        try {
+            JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
+            if (null == jsonObject || !jsonObject.containsKey("body")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
+            JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
+            String userCode = body.get("userCode").toString();
+            Map<String, MemberData> memberMap = ServerUtil.hqMap.getOrDefault(userCode, new HashMap<>());
+            rst.put("members", memberMap);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
 
     @RequestMapping(value = "/insert-member", method = RequestMethod.POST)
     public ResponseEntity<String> insertMember(HttpServletRequest request) {
@@ -49,7 +66,7 @@ public class HqController {
             String[] names = NameUtil.generateNames("", gender);
             memberData.setFirstName(names[0]);
             memberData.setLastName(names[1]);
-            memberData.setNickname(names[3]);
+            memberData.setNickname(names[2]);
             memberData.setCreature("1");
             memberData.setGender(gender);
             r = Math.random();

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class ServerUtil {
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
     public final static Map<String, Map<String, MemberData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
+    public final static Map<String, Map<String, BigDecimal>> relationMap = new ConcurrentHashMap<>(); // uuid, relations towards
     public final static Map<Integer, Drop> dropMap = new ConcurrentHashMap<>(); // dropNo, drop
     public final static int DROP_NO_MIN = 1;
     public static int dropNo = DROP_NO_MIN;
@@ -127,6 +129,8 @@ public class ServerUtil {
             rst.put("voiceMessages", voiceMessages);
 //            System.out.println("VoiceMessage sent:" + userCode);
         }
+
+        rst.put("relations", ServerUtil.relationMap.getOrDefault(userCode, new HashMap<>()));
 
         return JSONObject.toJSONString(rst);
     }
