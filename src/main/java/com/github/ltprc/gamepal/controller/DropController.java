@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ltprc.gamepal.model.ClassicalPosition;
 import com.github.ltprc.gamepal.model.Drop;
 import com.github.ltprc.gamepal.util.ServerUtil;
 
@@ -38,29 +35,18 @@ public class DropController {
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             String userCode = body.get("userCode").toString();
+            if (!ServerUtil.userStatusMap.containsKey(userCode)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
             int dropNo = Integer.parseInt(body.get("dropNo").toString());
             if (!ServerUtil.dropMap.containsKey(dropNo)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
             }
             Drop drop = ServerUtil.dropMap.get(dropNo);
-            if (!ServerUtil.userStatusMap.containsKey(userCode)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
-            }
-            Map<String, Integer> items = ServerUtil.userStatusMap.get(userCode).getItems();
-            if (null == items) {
-                ServerUtil.userStatusMap.get(userCode).setItems(new HashMap<>());
-            }
-            int difference = Integer.MAX_VALUE - drop.getAmount();
-            if (difference < items.getOrDefault(drop.getItemNo(), 0)) {
-                items.put(drop.getItemNo(), Integer.MAX_VALUE);
-                drop.setAmount(drop.getAmount() - difference);
-                ServerUtil.dropMap.put(dropNo, drop);
-            } else {
-                items.put(drop.getItemNo(), items.get(drop.getItemNo()) + drop.getAmount());
-                ServerUtil.dropMap.remove(dropNo);
-                while (ServerUtil.dropNo > ServerUtil.DROP_NO_MIN && !ServerUtil.dropMap.containsKey(ServerUtil.dropNo - 1)) {
-                    ServerUtil.dropNo--;
-                }
+            rst.put("drop", drop);
+            ServerUtil.dropMap.remove(dropNo);
+            while (ServerUtil.dropNo > ServerUtil.DROP_NO_MIN && !ServerUtil.dropMap.containsKey(ServerUtil.dropNo - 1)) {
+                ServerUtil.dropNo--;
             }
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
@@ -85,11 +71,11 @@ public class DropController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
             }
             int sceneNo = Integer.parseInt(body.get("sceneNo").toString());
-            int x = Integer.parseInt(body.get("x").toString());
-            int y = Integer.parseInt(body.get("y").toString());
+            BigDecimal x = new BigDecimal(body.get("x").toString());
+            BigDecimal y = new BigDecimal(body.get("y").toString());
             String itemNo = body.get("itemNo").toString();
             int amount = Integer.parseInt(body.get("amount").toString());
-            Drop drop = new Drop(sceneNo, new BigDecimal(x + Math.random()), new BigDecimal(y + Math.random()), itemNo, amount);
+            Drop drop = new Drop(sceneNo, x, y, itemNo, amount);
             ServerUtil.dropMap.put(ServerUtil.dropNo, drop);
             if (ServerUtil.dropNo < Integer.MAX_VALUE) {
                 /**
