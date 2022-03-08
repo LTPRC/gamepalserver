@@ -2,8 +2,6 @@ package com.github.ltprc.gamepal.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,14 +36,14 @@ public class DropController {
             if (!ServerUtil.userStatusMap.containsKey(userCode)) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
-            int dropNo = Integer.parseInt(body.get("dropNo").toString());
+            String dropNo = body.get("dropNo").toString();
             if (!ServerUtil.dropMap.containsKey(dropNo)) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
             }
             Drop drop = ServerUtil.dropMap.get(dropNo);
             rst.put("drop", drop);
             ServerUtil.dropMap.remove(dropNo);
-            while (ServerUtil.dropNo > ServerUtil.DROP_NO_MIN && !ServerUtil.dropMap.containsKey(ServerUtil.dropNo - 1)) {
+            while (ServerUtil.dropNo > ServerUtil.DROP_NO_MIN && !ServerUtil.dropMap.containsKey(String.valueOf(ServerUtil.dropNo - 1))) {
                 ServerUtil.dropNo--;
             }
         } catch (IOException e) {
@@ -67,7 +65,7 @@ public class DropController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
-            if (null == body || !body.containsKey("itemsMap")) {
+            if (null == body) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Result not found");
             }
             int sceneNo = Integer.parseInt(body.get("sceneNo").toString());
@@ -76,7 +74,7 @@ public class DropController {
             String itemNo = body.get("itemNo").toString();
             int amount = Integer.parseInt(body.get("amount").toString());
             Drop drop = new Drop(sceneNo, x, y, itemNo, amount);
-            ServerUtil.dropMap.put(ServerUtil.dropNo, drop);
+            ServerUtil.dropMap.put(String.valueOf(ServerUtil.dropNo), drop);
             if (ServerUtil.dropNo < Integer.MAX_VALUE) {
                 /**
                  * The last drop will be erased.

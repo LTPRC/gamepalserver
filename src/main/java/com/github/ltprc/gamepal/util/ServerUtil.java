@@ -57,7 +57,7 @@ public class ServerUtil {
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
     public final static Map<String, Map<String, MemberData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
     public final static Map<String, Map<String, BigDecimal>> relationMap = new ConcurrentHashMap<>(); // uuid, relations towards
-    public final static Map<Integer, Drop> dropMap = new ConcurrentHashMap<>(); // dropNo, drop
+    public final static Map<String, Drop> dropMap = new ConcurrentHashMap<>(); // dropNo, drop
     public final static int DROP_NO_MIN = 1;
     public static int dropNo = DROP_NO_MIN;
 
@@ -131,6 +131,7 @@ public class ServerUtil {
         }
 
         rst.put("relations", ServerUtil.relationMap.getOrDefault(userCode, new HashMap<>()));
+        rst.put("drops", ServerUtil.dropMap);
 
         return JSONObject.toJSONString(rst);
     }
