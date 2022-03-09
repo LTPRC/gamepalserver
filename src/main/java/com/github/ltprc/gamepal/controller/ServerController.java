@@ -117,72 +117,84 @@ public class ServerController {
             if (userOnlineRepository.queryUserOnlineByUuid(uuid).isEmpty()) {
                 userOnlineRepository.save(userOnline);
             }
-            UserData userData = new UserData();
-            userData.setUserCode(uuid);
-            userData.setNearbySceneNos(new ArrayList<>()); // To be determined
-            userData.setSceneNo(0); // To be determined
-            userData.setPlayerX(new BigDecimal(2.0)); // To be determined
-            userData.setPlayerY(new BigDecimal(2.0)); // To be determined
-            userData.setNextSceneNo(userData.getSceneNo());
-            userData.setPlayerNextX(userData.getPlayerX());
-            userData.setPlayerNextY(userData.getPlayerY());
-            userData.setPlayerSpeedX(new BigDecimal(0.0)); // To be determined
-            userData.setPlayerSpeedY(new BigDecimal(0.0)); // To be determined
-            userData.setPlayerMaxSpeedX(ServerUtil.PLAYER_SPEED_X_MAX);
-            userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
-            userData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
-            userData.setPlayerDirection(7);
-            userData.setTools(new HashSet<>());
-            List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
-            if (null != userCharacterList && userCharacterList.size() > 0) {
-                userData.setFirstName(userCharacterList.get(0).getFirstName());
-                userData.setLastName(userCharacterList.get(0).getLastName());
-                userData.setNickname(userCharacterList.get(0).getNickname());
-                userData.setNameColor(userCharacterList.get(0).getNameColor());
-                userData.setCreature(userCharacterList.get(0).getCreature());
-                userData.setGender(userCharacterList.get(0).getGender());
-                userData.setSkinColor(userCharacterList.get(0).getSkinColor());
-                userData.setHairstyle(userCharacterList.get(0).getHairstyle());
-                userData.setHairColor(userCharacterList.get(0).getHairColor());
-                userData.setEyes(userCharacterList.get(0).getEyes());
-                String outfitsStr = userCharacterList.get(0).getOutfit();
-                Set<String> outfits = new HashSet<>();
-                if (StringUtils.isNotBlank(outfitsStr)) {
-                    String[] outfitsStrs = userCharacterList.get(0).getOutfit().split(",");
-                    for (String str : outfitsStrs) {
-                        outfits.add(str);
+            if (!ServerUtil.userDataMap.containsKey(uuid)) {
+                UserData userData = new UserData();
+                userData.setUserCode(uuid);
+                userData.setNearbySceneNos(new ArrayList<>()); // To be determined
+                userData.setSceneNo(0); // To be determined
+                userData.setPlayerX(new BigDecimal(2.0)); // To be determined
+                userData.setPlayerY(new BigDecimal(2.0)); // To be determined
+                userData.setNextSceneNo(userData.getSceneNo());
+                userData.setPlayerNextX(userData.getPlayerX());
+                userData.setPlayerNextY(userData.getPlayerY());
+                userData.setPlayerSpeedX(new BigDecimal(0.0)); // To be determined
+                userData.setPlayerSpeedY(new BigDecimal(0.0)); // To be determined
+                userData.setPlayerMaxSpeedX(ServerUtil.PLAYER_SPEED_X_MAX);
+                userData.setPlayerMaxSpeedY(ServerUtil.PLAYER_SPEED_Y_MAX);
+                userData.setAcceleration(ServerUtil.PLAYER_ACCELERATION);
+                userData.setPlayerDirection(7);
+                userData.setTools(new HashSet<>());
+                List<UserCharacter> userCharacterList = userCharacterRepository.queryUserCharacterByUuid(uuid);
+                if (null != userCharacterList && userCharacterList.size() > 0) {
+                    userData.setFirstName(userCharacterList.get(0).getFirstName());
+                    userData.setLastName(userCharacterList.get(0).getLastName());
+                    userData.setNickname(userCharacterList.get(0).getNickname());
+                    userData.setNameColor(userCharacterList.get(0).getNameColor());
+                    userData.setCreature(userCharacterList.get(0).getCreature());
+                    userData.setGender(userCharacterList.get(0).getGender());
+                    userData.setSkinColor(userCharacterList.get(0).getSkinColor());
+                    userData.setHairstyle(userCharacterList.get(0).getHairstyle());
+                    userData.setHairColor(userCharacterList.get(0).getHairColor());
+                    userData.setEyes(userCharacterList.get(0).getEyes());
+                    String outfitsStr = userCharacterList.get(0).getOutfit();
+                    Set<String> outfits = new HashSet<>();
+                    if (StringUtils.isNotBlank(outfitsStr)) {
+                        String[] outfitsStrs = userCharacterList.get(0).getOutfit().split(",");
+                        for (String str : outfitsStrs) {
+                            outfits.add(str);
+                        }
                     }
+                    userData.setOutfits(outfits);
+                    userData.setAvatar(userCharacterList.get(0).getAvatar());
                 }
-                userData.setOutfits(outfits);
-                userData.setAvatar(userCharacterList.get(0).getAvatar());
+                ServerUtil.userDataMap.put(uuid, userData);
+                Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
+                userCodeSet.add(uuid);
+                ServerUtil.userLocationMap.put(userData.getSceneNo(), userCodeSet);
             }
-            ServerUtil.userDataMap.put(uuid, userData);
-            UserStatus userStatus = new UserStatus();
-            userStatus.setHpMax(100); // To be determined
-            userStatus.setHp(userStatus.getHpMax());
-            userStatus.setVpMax(1000); // To be determined
-            userStatus.setVp(userStatus.getVpMax());
-            userStatus.setHungerMax(100); // To be determined
-            userStatus.setHunger(userStatus.getHungerMax());
-            userStatus.setThirstMax(100); // To be determined
-            userStatus.setThirst(userStatus.getThirstMax());
-            userStatus.setLevel(1);
-            userStatus.setExp(0);
-            userStatus.setExpMax(100); // To be determined
-            userStatus.setMoney(0);
-            userStatus.setItems(new HashMap<>());
-            userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
-            userStatus.setCapacity(new BigDecimal(0));
-            userStatus.setPreservedItems(new HashMap<>());
-            userStatus.setMemberNumMax(100); // To be determined
-            ServerUtil.userStatusMap.put(uuid, userStatus);
-            Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
-            userCodeSet.add(uuid);
-            ServerUtil.userLocationMap.put(userData.getSceneNo(), userCodeSet);
-            ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
-            ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
-            ServerUtil.hqMap.put(uuid, new HashMap<>());
-            ServerUtil.relationMap.put(uuid, new HashMap<>());
+            if (!ServerUtil.userStatusMap.containsKey(uuid)) {
+                UserStatus userStatus = new UserStatus();
+                userStatus.setHpMax(100); // To be determined
+                userStatus.setHp(userStatus.getHpMax());
+                userStatus.setVpMax(1000); // To be determined
+                userStatus.setVp(userStatus.getVpMax());
+                userStatus.setHungerMax(100); // To be determined
+                userStatus.setHunger(userStatus.getHungerMax());
+                userStatus.setThirstMax(100); // To be determined
+                userStatus.setThirst(userStatus.getThirstMax());
+                userStatus.setLevel(1);
+                userStatus.setExp(0);
+                userStatus.setExpMax(100); // To be determined
+                userStatus.setMoney(0);
+                userStatus.setItems(new HashMap<>());
+                userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
+                userStatus.setCapacity(new BigDecimal(0));
+                userStatus.setPreservedItems(new HashMap<>());
+                userStatus.setMemberNumMax(100); // To be determined
+                ServerUtil.userStatusMap.put(uuid, userStatus);
+            }
+            if (!ServerUtil.chatMap.containsKey(uuid)) {
+                ServerUtil.chatMap.put(uuid, new ConcurrentLinkedQueue<>());
+            }
+            if (!ServerUtil.voiceMap.containsKey(uuid)) {
+                ServerUtil.voiceMap.put(uuid, new ConcurrentLinkedQueue<>());
+            }
+            if (!ServerUtil.hqMap.containsKey(uuid)) {
+                ServerUtil.hqMap.put(uuid, new HashMap<>());
+            }
+            if (!ServerUtil.relationMap.containsKey(uuid)) {
+                ServerUtil.relationMap.put(uuid, new HashMap<>());
+            }
             JSONObject rst = new JSONObject();
             rst.put("userCode", uuid);
             rst.put("token", ServerUtil.tokenMap.get(uuid));

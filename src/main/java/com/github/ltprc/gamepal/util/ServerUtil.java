@@ -88,6 +88,7 @@ public class ServerUtil {
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
+//        System.out.println("Reply:" + JSON.toJSON(userStatus));
         rst.put("userStatus", JSON.toJSON(userStatus));
         List<Integer> sceneNos = new ArrayList<>();
         sceneNos.add(userData.getSceneNo());

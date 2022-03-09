@@ -1,8 +1,7 @@
 package com.github.ltprc.gamepal.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ltprc.gamepal.entity.UserOnline;
 import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.model.UserStatus;
@@ -83,200 +81,206 @@ public class WebSocketController {
         /**
          * Update userDatas and userStatus
          */
-        for (Entry<String, Object> entry : jsonObject.entrySet()) {
-            switch (entry.getKey()) {
-            case "nearbySceneNos":
-                userData.setNearbySceneNos((List<Integer>) entry.getValue());
-                break;
-            case "sceneNo":
-                userData.setSceneNo((int) entry.getValue());
-                break;
-            case "playerX":
-                userData.setPlayerX(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerY":
-                userData.setPlayerY(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "nextSceneNo":
-                userData.setNextSceneNo((int) entry.getValue());
-                break;
-            case "playerNextX":
-                userData.setPlayerNextX(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerNextY":
-                userData.setPlayerNextY(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerSpeedX":
-                userData.setPlayerSpeedX(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerSpeedY":
-                userData.setPlayerSpeedY(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerMaxSpeedX":
-                userData.setPlayerMaxSpeedX(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerMaxSpeedY":
-                userData.setPlayerMaxSpeedY(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "acceleration":
-                userData.setAcceleration(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "playerDirection":
-                userData.setPlayerDirection((int) entry.getValue());
-                break;
-            case "firstName":
-                userData.setFirstName(entry.getValue().toString());
-                break;
-            case "lastName":
-                userData.setLastName(entry.getValue().toString());
-                break;
-            case "nickname":
-                userData.setNickname(entry.getValue().toString());
-                break;
-            case "nameColor":
-                userData.setNameColor(entry.getValue().toString());
-                break;
-            case "creature":
-                userData.setCreature(entry.getValue().toString());
-                break;
-            case "gender":
-                userData.setGender(entry.getValue().toString());
-                break;
-            case "skinColor":
-                userData.setSkinColor(entry.getValue().toString());
-                break;
-            case "hairstyle":
-                userData.setHairstyle(entry.getValue().toString());
-                break;
-            case "hairColor":
-                userData.setHairColor(entry.getValue().toString());
-                break;
-            case "eyes":
-                userData.setEyes(entry.getValue().toString());
-                break;
-            case "tools":
-                JSONArray toolsJSONArray = JSONArray.parseArray(entry.getValue().toString());
-                Set<String> tools = new HashSet<>();
-                for (Object str : toolsJSONArray) {
-                    tools.add((String) str);
+        if (jsonObject.containsKey("userData")) {
+            JSONObject userDataObject = (JSONObject) jsonObject.get("userData");
+            for (Entry<String, Object> entry : userDataObject.entrySet()) {
+                switch (entry.getKey()) {
+                case "nearbySceneNos":
+                    userData.setNearbySceneNos((List<Integer>) entry.getValue());
+                    break;
+                case "sceneNo":
+                    int newSceneNo = (int) entry.getValue();
+                    /**
+                     * Update UserLocation
+                     */
+                    if (userData.getSceneNo() != newSceneNo) {
+                        userData.setSceneNo(newSceneNo);
+                        Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
+                        userCodeSet.remove(userCode);
+                        ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
+                        userCodeSet = ServerUtil.userLocationMap.getOrDefault(newSceneNo, new ConcurrentSkipListSet<>());
+                        userCodeSet.add(userCode);
+                        ServerUtil.userLocationMap.put(newSceneNo, userCodeSet);
+                    }
+                    break;
+                case "playerX":
+                    userData.setPlayerX(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerY":
+                    userData.setPlayerY(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "nextSceneNo":
+                    userData.setNextSceneNo((int) entry.getValue());
+                    break;
+                case "playerNextX":
+                    userData.setPlayerNextX(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerNextY":
+                    userData.setPlayerNextY(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerSpeedX":
+                    userData.setPlayerSpeedX(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerSpeedY":
+                    userData.setPlayerSpeedY(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerMaxSpeedX":
+                    userData.setPlayerMaxSpeedX(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerMaxSpeedY":
+                    userData.setPlayerMaxSpeedY(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "acceleration":
+                    userData.setAcceleration(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "playerDirection":
+                    userData.setPlayerDirection((int) entry.getValue());
+                    break;
+                case "firstName":
+                    userData.setFirstName(entry.getValue().toString());
+                    break;
+                case "lastName":
+                    userData.setLastName(entry.getValue().toString());
+                    break;
+                case "nickname":
+                    userData.setNickname(entry.getValue().toString());
+                    break;
+                case "nameColor":
+                    userData.setNameColor(entry.getValue().toString());
+                    break;
+                case "creature":
+                    userData.setCreature(entry.getValue().toString());
+                    break;
+                case "gender":
+                    userData.setGender(entry.getValue().toString());
+                    break;
+                case "skinColor":
+                    userData.setSkinColor(entry.getValue().toString());
+                    break;
+                case "hairstyle":
+                    userData.setHairstyle(entry.getValue().toString());
+                    break;
+                case "hairColor":
+                    userData.setHairColor(entry.getValue().toString());
+                    break;
+                case "eyes":
+                    userData.setEyes(entry.getValue().toString());
+                    break;
+                case "tools":
+                    JSONArray toolsJSONArray = JSONArray.parseArray(entry.getValue().toString());
+                    Set<String> tools = new HashSet<>();
+                    for (Object str : toolsJSONArray) {
+                        tools.add((String) str);
+                    }
+                    userData.setTools(tools);
+                    break;
+                case "outfits":
+                    JSONArray outfitsJSONArray = JSONArray.parseArray(entry.getValue().toString());
+                    Set<String> outfits = new HashSet<>();
+                    for (Object str : outfitsJSONArray) {
+                        outfits.add((String) str);
+                    }
+                    userData.setOutfits(outfits);
+                    break;
+                case "avatar":
+                    userData.setAvatar(Integer.parseInt(entry.getValue().toString()));
+                    break;
                 }
-                userData.setTools(tools);
-                break;
-            case "outfits":
-                JSONArray outfitsJSONArray = JSONArray.parseArray(entry.getValue().toString());
-                Set<String> outfits = new HashSet<>();
-                for (Object str : outfitsJSONArray) {
-                    outfits.add((String) str);
-                }
-                userData.setOutfits(outfits);
-                break;
-            case "avatar":
-                userData.setAvatar(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "hpMax":
-                userStatus.setHpMax(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "hp":
-                userStatus.setHp(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "vpMax":
-                userStatus.setVpMax(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "vp":
-                userStatus.setVp(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "hungerMax":
-                userStatus.setHungerMax(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "hunger":
-                userStatus.setHunger(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "thirstMax":
-                userStatus.setThirstMax(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "thirst":
-                userStatus.setThirst(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "level":
-                userStatus.setLevel(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "exp":
-                userStatus.setExp(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "expMax":
-                userStatus.setExpMax(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "money":
-                userStatus.setMoney(Integer.parseInt(entry.getValue().toString()));
-                break;
-            case "items":
-                JSONObject items = (JSONObject) entry.getValue();
-                Map<String, Integer> iMap = userStatus.getItems();
-                for (Entry<String, Object> bEntry : items.entrySet()) {
-                    iMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
-                }
-                break;
-            case "capacityMax":
-                userStatus.setCapacityMax(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "capacity":
-                userStatus.setCapacity(new BigDecimal(entry.getValue().toString()));
-                break;
-            case "preservedItems":
-                JSONObject preservedItems = (JSONObject) entry.getValue();
-                Map<String, Integer> riMap = userStatus.getPreservedItems();
-                for (Entry<String, Object> bEntry : preservedItems.entrySet()) {
-                    riMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
-                }
-                break;
-            case "buff":
-                userStatus.setBuff(entry.getValue().toString());
-                /**
-                 * Settle buff effect
-                 */
-                // To be continued...
-                break;
-            case "memberNumMax":
-                userStatus.setMemberNumMax((int) entry.getValue());
-                break;
-//            case "palCodeList": // Not here!
-//                JSONObject palCodeListJSON = (JSONObject) entry.getValue();
-//                List<String> palCodeList = new ArrayList<>();
-//                for (Entry<String, Object> pEntry : palCodeListJSON.entrySet()) {
-//                    palCodeList.add(pEntry.getValue().toString());
-//                }
-//                userStatus.setPalCodeList(palCodeList);
-//                break;
-            case "palNumMax":
-                userStatus.setPalNumMax((int) entry.getValue());
-                break;
             }
-            /**
-             * Check level-up
-             */
-            while (userStatus.getExp() >= userStatus.getExpMax()) {
-                userStatus.setLevel(userStatus.getLevel() + 1);
-                userStatus.setExp(userStatus.getExp() - userStatus.getExpMax());
-                userStatus.setExpMax(100 * (int) Math.pow(userStatus.getLevel(), 2));
+        }
+        if (jsonObject.containsKey("userStatus")) {
+            JSONObject userStatusObject = (JSONObject) jsonObject.get("userStatus");
+            for (Entry<String, Object> entry : userStatusObject.entrySet()) {
+                switch (entry.getKey()) {
+                case "hpMax":
+                    userStatus.setHpMax(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "hp":
+                    userStatus.setHp(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "vpMax":
+                    userStatus.setVpMax(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "vp":
+                    userStatus.setVp(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "hungerMax":
+                    userStatus.setHungerMax(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "hunger":
+                    userStatus.setHunger(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "thirstMax":
+                    userStatus.setThirstMax(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "thirst":
+                    userStatus.setThirst(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "level":
+                    userStatus.setLevel(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "exp":
+                    userStatus.setExp(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "expMax":
+                    userStatus.setExpMax(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "money":
+                    userStatus.setMoney(Integer.parseInt(entry.getValue().toString()));
+                    break;
+                case "items":
+                    JSONObject items = (JSONObject) entry.getValue();
+                    Map<String, Integer> iMap = new HashMap<>();
+                    for (Entry<String, Object> bEntry : items.entrySet()) {
+                        iMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
+                    }
+                    userStatus.setItems(iMap);
+                    break;
+                case "capacityMax":
+                    userStatus.setCapacityMax(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "capacity":
+                    userStatus.setCapacity(new BigDecimal(entry.getValue().toString()));
+                    break;
+                case "preservedItems":
+                    JSONObject preservedItems = (JSONObject) entry.getValue();
+                    Map<String, Integer> riMap = new HashMap<>();
+                    for (Entry<String, Object> bEntry : preservedItems.entrySet()) {
+                        riMap.put(bEntry.getKey().toString(), (int) bEntry.getValue());
+                    }
+                    userStatus.setPreservedItems(riMap);
+                    break;
+                case "buff":
+                    userStatus.setBuff(entry.getValue().toString());
+                    /**
+                     * Settle buff effect
+                     */
+                    // To be continued...
+                    break;
+                case "memberNumMax":
+                    userStatus.setMemberNumMax((int) entry.getValue());
+                    break;
+    //            case "palCodeList": // Not here!
+    //                JSONObject palCodeListJSON = (JSONObject) entry.getValue();
+    //                List<String> palCodeList = new ArrayList<>();
+    //                for (Entry<String, Object> pEntry : palCodeListJSON.entrySet()) {
+    //                    palCodeList.add(pEntry.getValue().toString());
+    //                }
+    //                userStatus.setPalCodeList(palCodeList);
+    //                break;
+                case "palNumMax":
+                    userStatus.setPalNumMax((int) entry.getValue());
+                    break;
+                }
             }
-            /**
-             * Update UserLocation
-             */
-            if (jsonObject.containsKey("sceneNo") && userData.getSceneNo() != jsonObject.getInteger("sceneNo")) {
-                Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(ServerUtil.userDataMap.get(userCode).getSceneNo(), new ConcurrentSkipListSet<>());
-                userCodeSet.remove(userCode);
-                ServerUtil.userLocationMap.put(ServerUtil.userDataMap.get(userCode).getSceneNo(), userCodeSet);
-                userCodeSet = ServerUtil.userLocationMap.getOrDefault(jsonObject.getInteger("sceneNo"), new ConcurrentSkipListSet<>());
-                userCodeSet.add(userCode);
-                ServerUtil.userLocationMap.put(jsonObject.getInteger("sceneNo"), userCodeSet);
-            }
-            /**
-             * Update userDataMap and userStatusMap
-             */
-            ServerUtil.userDataMap.put(userCode, userData);
-            ServerUtil.userStatusMap.put(userCode, userStatus);
         }
 
+        String content = ServerUtil.generateReplyContent(userCode);
+        ServerUtil.sendMessage(userCode, content);
+    }
+
+    @Deprecated
+    private void updateMessage(JSONObject jsonObject, String userCode) {
         /**
          * Update ChatMessage
          */
@@ -311,7 +315,6 @@ public class WebSocketController {
                 }
             }
         }
-
         /**
          * Update VoiceMessage
          */
@@ -346,8 +349,5 @@ public class WebSocketController {
                 }
             }
         }
-
-        String content = ServerUtil.generateReplyContent(userCode);
-        ServerUtil.sendMessage(userCode, content);
     }
 }
