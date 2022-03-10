@@ -6,6 +6,11 @@ import java.util.Set;
 
 public class UserData {
     private String userCode;
+    private String masterCode; // Not in DB
+    private int relationLevel; // Not in DB
+    private int userType; // Not in DB
+
+    private int worldNo; // Not in DB
     private List<Integer> nearbySceneNos;
     private int sceneNo;
     private BigDecimal playerX;
@@ -15,13 +20,10 @@ public class UserData {
     private BigDecimal playerNextY;
     private BigDecimal playerSpeedX;
     private BigDecimal playerSpeedY;
-    // Never exceed 1
-    private BigDecimal playerMaxSpeedX;
-    // Never exceed 1
-    private BigDecimal playerMaxSpeedY;
+    private BigDecimal playerMaxSpeedX; // Never exceed 1
+    private BigDecimal playerMaxSpeedY; // Never exceed 1
     private BigDecimal acceleration;
-    // 1-E 2-NE 3-N 4-NW 5-W 6-SW 7-S 8-SE
-    private int playerDirection;
+    private int playerDirection; // 1-E 2-NE 3-N 4-NW 5-W 6-SW 7-S 8-SE
 
     private String firstName;
     private String lastName;
@@ -37,11 +39,80 @@ public class UserData {
     private Set<String> outfits;
     private int avatar;
 
+    /**
+     * 生命值最大值
+     */
+    private int hpMax;
+    /**
+     * 生命值
+     */
+    private int hp;
+    /**
+     * 活力值最大值
+     */
+    private int vpMax;
+    /**
+     * 活力值
+     */
+    private int vp;
+    /**
+     * 饥饿值
+     */
+    private int hunger;
+    /**
+     * 饥饿值最大值
+     */
+    private int hungerMax;
+    /**
+     * 口渴值
+     */
+    private int thirst;
+    /**
+     * 口渴值最大值
+     */
+    private int thirstMax;
+    /**
+     * 等级
+     */
+    private int level;
+    /**
+     * 经验值
+     */
+    private int exp;
+    /**
+     * 经验值最大值
+     */
+    private int expMax;
+
     public String getUserCode() {
         return userCode;
     }
     public void setUserCode(String userCode) {
         this.userCode = userCode;
+    }
+    public String getMasterCode() {
+        return masterCode;
+    }
+    public void setMasterCode(String masterCode) {
+        this.masterCode = masterCode;
+    }
+    public int getRelationLevel() {
+        return relationLevel;
+    }
+    public void setRelationLevel(int relationLevel) {
+        this.relationLevel = relationLevel;
+    }
+    public int getUserType() {
+        return userType;
+    }
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+    public int getWorldNo() {
+        return worldNo;
+    }
+    public void setWorldNo(int worldNo) {
+        this.worldNo = worldNo;
     }
     public int getSceneNo() {
         return sceneNo;
@@ -198,5 +269,71 @@ public class UserData {
     }
     public void setNextSceneNo(int nextSceneNo) {
         this.nextSceneNo = nextSceneNo;
+    }
+    public int getHpMax() {
+        return hpMax;
+    }
+    public void setHpMax(int hpMax) {
+        this.hpMax = hpMax;
+    }
+    public int getHp() {
+        return hp;
+    }
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+    public int getVpMax() {
+        return vpMax;
+    }
+    public void setVpMax(int vpMax) {
+        this.vpMax = vpMax;
+    }
+    public int getVp() {
+        return vp;
+    }
+    public void setVp(int vp) {
+        this.vp = vp;
+    }
+    public int getHunger() {
+        return hunger;
+    }
+    public void setHunger(int hunger) {
+        this.hunger = hunger;
+    }
+    public int getHungerMax() {
+        return hungerMax;
+    }
+    public void setHungerMax(int hungerMax) {
+        this.hungerMax = hungerMax;
+    }
+    public int getThirst() {
+        return thirst;
+    }
+    public void setThirst(int thirst) {
+        this.thirst = thirst;
+    }
+    public int getThirstMax() {
+        return thirstMax;
+    }
+    public void setThirstMax(int thirstMax) {
+        this.thirstMax = thirstMax;
+    }
+    public int getLevel() {
+        return level;
+    }
+    public void setLevel(int level) {
+        this.level = level;
+    }
+    public int getExp() {
+        return exp;
+    }
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+    public int getExpMax() {
+        return expMax;
+    }
+    public void setExpMax(int expMax) {
+        this.expMax = expMax;
     }
 }

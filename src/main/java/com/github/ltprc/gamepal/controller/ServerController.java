@@ -5,19 +5,17 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +31,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ltprc.gamepal.model.UserData;
 import com.github.ltprc.gamepal.model.UserStatus;
-import com.github.ltprc.gamepal.model.map.Position;
 import com.github.ltprc.gamepal.entity.UserCharacter;
 import com.github.ltprc.gamepal.entity.UserInfo;
 import com.github.ltprc.gamepal.entity.UserOnline;
@@ -120,6 +117,10 @@ public class ServerController {
             if (!ServerUtil.userDataMap.containsKey(uuid)) {
                 UserData userData = new UserData();
                 userData.setUserCode(uuid);
+                userData.setMasterCode(uuid);
+                userData.setUserType(1);
+                userData.setRelationLevel(0);
+                userData.setWorldNo(1);
                 userData.setNearbySceneNos(new ArrayList<>()); // To be determined
                 userData.setSceneNo(0); // To be determined
                 userData.setPlayerX(new BigDecimal(2.0)); // To be determined
@@ -156,6 +157,18 @@ public class ServerController {
                     }
                     userData.setOutfits(outfits);
                     userData.setAvatar(userCharacterList.get(0).getAvatar());
+
+                    userData.setHpMax(100); // To be determined
+                    userData.setHp(userData.getHpMax());
+                    userData.setVpMax(1000); // To be determined
+                    userData.setVp(userData.getVpMax());
+                    userData.setHungerMax(100); // To be determined
+                    userData.setHunger(userData.getHungerMax());
+                    userData.setThirstMax(100); // To be determined
+                    userData.setThirst(userData.getThirstMax());
+                    userData.setLevel(1);
+                    userData.setExp(0);
+                    userData.setExpMax(100); // To be determined
                 }
                 ServerUtil.userDataMap.put(uuid, userData);
                 Set<String> userCodeSet = ServerUtil.userLocationMap.getOrDefault(userData.getSceneNo(), new ConcurrentSkipListSet<>());
@@ -164,17 +177,6 @@ public class ServerController {
             }
             if (!ServerUtil.userStatusMap.containsKey(uuid)) {
                 UserStatus userStatus = new UserStatus();
-                userStatus.setHpMax(100); // To be determined
-                userStatus.setHp(userStatus.getHpMax());
-                userStatus.setVpMax(1000); // To be determined
-                userStatus.setVp(userStatus.getVpMax());
-                userStatus.setHungerMax(100); // To be determined
-                userStatus.setHunger(userStatus.getHungerMax());
-                userStatus.setThirstMax(100); // To be determined
-                userStatus.setThirst(userStatus.getThirstMax());
-                userStatus.setLevel(1);
-                userStatus.setExp(0);
-                userStatus.setExpMax(100); // To be determined
                 userStatus.setMoney(0);
                 userStatus.setItems(new HashMap<>());
                 userStatus.setCapacityMax(new BigDecimal(50)); // To be determined
@@ -214,15 +216,19 @@ public class ServerController {
             }
             JSONObject body = (JSONObject) JSONObject.parse((String) jsonObject.get("body"));
             userCode = body.getString("userCode");
+            if (StringUtils.isBlank(userCode)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
+            }
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
-        UserData userData = ServerUtil.userDataMap.get(userCode);
-        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
         JSONObject rst = new JSONObject();
         rst.put("userCode", userCode);
         rst.put("token", ServerUtil.tokenMap.get(userCode));
-        rst.put("userData", JSON.toJSON(userData));
+        Map<String, UserData> userDatas = ServerUtil.userDataMap.entrySet().stream().filter(entry -> userCode.equals(entry.getValue().getMasterCode()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, HashMap::new));
+        rst.put("privateUserDatas", JSON.toJSON(userDatas));
+        UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
         rst.put("userStatus", JSON.toJSON(userStatus));
         return ResponseEntity.status(HttpStatus.OK).body(JSONObject.toJSONString(rst));
     }

@@ -2,6 +2,7 @@ package com.github.ltprc.gamepal.model;
 
 import java.util.Set;
 
+@Deprecated
 public class MemberData {
     private String memberCode;
     private String userCode;
