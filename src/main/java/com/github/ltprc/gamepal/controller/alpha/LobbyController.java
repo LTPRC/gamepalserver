@@ -1,4 +1,4 @@
-package com.github.ltprc.gamepal.controller;
+package com.github.ltprc.gamepal.controller.alpha;
 
 import java.util.ArrayList;
 import java.util.List;

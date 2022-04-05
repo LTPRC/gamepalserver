@@ -1,11 +1,16 @@
 package com.github.ltprc.gamepal.util;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +60,7 @@ public class ServerUtil {
     public final static Map<String, Queue<ChatMessage>> chatMap = new ConcurrentHashMap<>(); // uuid, message queue
     public final static Map<String, Queue<VoiceMessage>> voiceMap = new ConcurrentHashMap<>(); // uuid, voice file queue
     public final static Map<String, Map<String, UserData>> hqMap = new ConcurrentHashMap<>(); // uuid, member map
-    public final static Map<String, Map<String, BigDecimal>> relationMap = new ConcurrentHashMap<>(); // uuid, relations towards
+    public final static Map<String, Map<String, Integer>> enemyMap = new ConcurrentHashMap<>(); // uuid, isEnemy
     public final static Map<String, Drop> dropMap = new ConcurrentHashMap<>(); // dropNo, drop
     public final static int DROP_NO_MIN = 1;
     public static int dropNo = DROP_NO_MIN;
@@ -130,7 +135,7 @@ public class ServerUtil {
 //            System.out.println("VoiceMessage sent:" + userCode);
         }
 
-        rst.put("relations", ServerUtil.relationMap.getOrDefault(userCode, new HashMap<>()));
+        rst.put("enemies", ServerUtil.enemyMap.getOrDefault(userCode, new HashMap<>()));
         rst.put("drops", ServerUtil.dropMap);
 
         return JSONObject.toJSONString(rst);
@@ -160,6 +165,57 @@ public class ServerUtil {
         while ((str = br.readLine()) != null) {
             listString += str;
         }
-       return (JSONObject) JSONObject.parse(listString);
+        return (JSONObject) JSONObject.parse(listString);
+    }
+
+    public static JSONObject jsonFile2JSONObject(String filePath) {
+        try {
+            File jsonFile = new File(filePath);
+            Reader reader = new InputStreamReader(new FileInputStream(jsonFile), "utf-8");
+            int ch = 0;
+            StringBuffer sb = new StringBuffer();
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+            return (JSONObject) JSONObject.parse(sb.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static JSONArray jsonFile2JSONArray(String filePath) {
+        try {
+            File jsonFile = new File(filePath);
+            Reader reader = new InputStreamReader(new FileInputStream(jsonFile), "utf-8");
+            int ch = 0;
+            StringBuffer sb = new StringBuffer();
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+            return (JSONArray) JSONArray.parse(sb.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void init() {
+        /**
+         * Initiate NPCs from JSON file
+         */
+        JSONArray npcArray = jsonFile2JSONArray("src/main/resources/static/npc.json");
+        for (Object npc : npcArray) {
+            JSONObject npcObject = (JSONObject) npc;
+            String userCode = (String) npcObject.get("userCode");
+            UserData userData = JSON.parseObject(npcObject.toJSONString(), UserData.class);
+            userDataMap.put(userCode, userData);
+            if (!userLocationMap.containsKey(userData.getSceneNo())) {
+                userLocationMap.put(userData.getSceneNo(), new HashSet<>());
+            }
+            userLocationMap.get(userData.getSceneNo()).add(userCode);
+        }
     }
 }

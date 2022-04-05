@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -194,8 +193,8 @@ public class ServerController {
             if (!ServerUtil.hqMap.containsKey(uuid)) {
                 ServerUtil.hqMap.put(uuid, new HashMap<>());
             }
-            if (!ServerUtil.relationMap.containsKey(uuid)) {
-                ServerUtil.relationMap.put(uuid, new HashMap<>());
+            if (!ServerUtil.enemyMap.containsKey(uuid)) {
+                ServerUtil.enemyMap.put(uuid, new HashMap<>());
             }
             JSONObject rst = new JSONObject();
             rst.put("userCode", uuid);
@@ -208,6 +207,7 @@ public class ServerController {
 
     @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
     public ResponseEntity<String> initUserData(HttpServletRequest request) {
+        ServerUtil.init();
         String userCode;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);
@@ -232,7 +232,7 @@ public class ServerController {
         rst.put("userStatus", JSON.toJSON(userStatus));
         return ResponseEntity.status(HttpStatus.OK).body(JSONObject.toJSONString(rst));
     }
-
+    
     @RequestMapping(value = "/logoff", method = RequestMethod.POST)
     public ResponseEntity<String> logoff(HttpServletRequest request) {
         JSONObject rst = new JSONObject();
