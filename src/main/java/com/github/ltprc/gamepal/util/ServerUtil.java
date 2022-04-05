@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -113,9 +115,13 @@ public class ServerUtil {
                 return up1.getPlayerY().compareTo(up2.getPlayerY());
             }
         };
-        Set<UserData> userDatas = new ConcurrentSkipListSet<>(comparator);
+        Set<UserData> userDataSet = new TreeSet<>(comparator);
         for (String code : userCodes) {
-            userDatas.add(ServerUtil.userDataMap.get(code));
+            userDataSet.add(ServerUtil.userDataMap.get(code));
+        }
+        Map<String, UserData> userDatas = new LinkedHashMap<>();
+        for (UserData userDataTemp : userDataSet) {
+            userDatas.put(userDataTemp.getUserCode(), userDataTemp);
         }
         rst.put("userDatas", JSON.toJSON(userDatas));
 
