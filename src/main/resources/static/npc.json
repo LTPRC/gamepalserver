@@ -1,6 +1,6 @@
 [
   {
-    "lastName": "泡",
+    "lastName": "矢泽",
     "masterCode": "npc1001",
     "playerX": 2,
     "gender": "2",
@@ -15,7 +15,7 @@
     "userCode": "npc1001",
     "acceleration": 0.01,
     "hpMax": 100,
-    "nickname": "泡芙",
+    "nickname": "矢泽妮可",
     "hungerMax": 100,
     "playerNextX": 2,
     "hairColor": "3",
@@ -26,12 +26,12 @@
     "thirst": 100,
     "level": 1,
     "nameColor": "#88FFFF",
-    "avatar": 1,
+    "avatar": 3,
     "relationLevel": 0,
     "expMax": 100,
     "hairstyle": "5",
     "hunger": 100,
-    "firstName": "芙",
+    "firstName": "妮可",
     "sceneNo": 0,
     "playerDirection": 7,
     "vpMax": 1000,
@@ -39,7 +39,7 @@
     "vp": 1000,
     "thirstMax": 100,
     "userType": 2,
-    "creature": "2",
+    "creature": "3",
     "playerMaxSpeedX": 0.05,
     "playerMaxSpeedY": 0.05
   }

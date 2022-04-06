@@ -96,33 +96,7 @@ public class ServerUtil {
         UserStatus userStatus = ServerUtil.userStatusMap.get(userCode);
 //        System.out.println("Reply:" + JSON.toJSON(userStatus));
         rst.put("userStatus", JSON.toJSON(userStatus));
-        List<Integer> sceneNos = new ArrayList<>();
-        sceneNos.add(userData.getSceneNo());
-        sceneNos.addAll(userData.getNearbySceneNos());
-        Set<String> userCodes = new ConcurrentSkipListSet<>();
-        for (int sceneNo : sceneNos) {
-            if (ServerUtil.userLocationMap.containsKey(sceneNo)) {
-                userCodes.addAll(ServerUtil.userLocationMap.get(sceneNo));
-            }
-        }
-        /**
-         * All nearby sceneNos will be included fFrom smaller y to bigger y.
-         * Include userCode itself now!
-         */
-        Comparator<UserData> comparator = new Comparator<UserData>() {
-            @Override
-            public int compare(UserData up1, UserData up2) {
-                return up1.getPlayerY().compareTo(up2.getPlayerY());
-            }
-        };
-        Set<UserData> userDataSet = new TreeSet<>(comparator);
-        for (String code : userCodes) {
-            userDataSet.add(ServerUtil.userDataMap.get(code));
-        }
-        Map<String, UserData> userDatas = new LinkedHashMap<>();
-        for (UserData userDataTemp : userDataSet) {
-            userDatas.put(userDataTemp.getUserCode(), userDataTemp);
-        }
+        Map<String, UserData> userDatas = getUserDatas(userCode, false);
         rst.put("userDatas", JSON.toJSON(userDatas));
 
         if (ServerUtil.chatMap.containsKey(userCode) && !ServerUtil.chatMap.get(userCode).isEmpty()) {
@@ -223,5 +197,41 @@ public class ServerUtil {
             }
             userLocationMap.get(userData.getSceneNo()).add(userCode);
         }
+    }
+
+    private static Map<String, UserData> getUserDatas(String userCode, boolean nearbyOnly) {
+        /**
+         * All nearby sceneNos will be included fFrom smaller y to bigger y.
+         * Include userCode itself now!
+         */
+        Comparator<UserData> comparator = new Comparator<UserData>() {
+            @Override
+            public int compare(UserData up1, UserData up2) {
+                return up1.getPlayerY().compareTo(up2.getPlayerY());
+            }
+        };
+        Set<UserData> userDataSet = new TreeSet<>(comparator);
+        if (nearbyOnly) {
+            UserData userData = userDataMap.get(userCode);
+            List<Integer> sceneNos = new ArrayList<>();
+            sceneNos.add(userData.getSceneNo());
+            sceneNos.addAll(userData.getNearbySceneNos());
+            Set<String> userCodes = new ConcurrentSkipListSet<>();
+            for (int sceneNo : sceneNos) {
+                if (userLocationMap.containsKey(sceneNo)) {
+                    userCodes.addAll(userLocationMap.get(sceneNo));
+                }
+            }
+            for (String code : userCodes) {
+                userDataSet.add(userDataMap.get(code));
+            }
+        } else {
+            userDataSet.addAll(userDataMap.values());
+        }
+        Map<String, UserData> userDatas = new LinkedHashMap<>();
+        for (UserData userDataTemp : userDataSet) {
+            userDatas.put(userDataTemp.getUserCode(), userDataTemp);
+        }
+        return userDatas;
     }
 }
