@@ -207,7 +207,8 @@ public class ServerController {
 
     @RequestMapping(value = "/init-user-data", method = RequestMethod.POST)
     public ResponseEntity<String> initUserData(HttpServletRequest request) {
-        ServerUtil.init();
+//        ServerUtil.init();
+        // Cannot find npc.json 04/15
         String userCode;
         try {
             JSONObject jsonObject = ServerUtil.strRequest2JSONObject(request);

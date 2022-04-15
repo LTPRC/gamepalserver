@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ltprc.gamepal.model.ChatMessage;
 import com.github.ltprc.gamepal.util.ServerUtil;
 
 @RestController
@@ -41,9 +42,46 @@ public class PlayerController {
             }
             ServerUtil.enemyMap.get(userCode).put(nextUserCode, newRelation);
             ServerUtil.enemyMap.get(nextUserCode).put(userCode, newRelation);
+            /**
+             * Send feedback messages to both players.
+             */
+            ChatMessage chatMessage1 = getRelationMessage(userCode, nextUserCode, true, newRelation);
+            ServerUtil.chatMap.get(userCode).add(chatMessage1);
+            ChatMessage chatMessage2 = getRelationMessage(userCode, nextUserCode, false, newRelation);
+            ServerUtil.chatMap.get(nextUserCode).add(chatMessage2);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
         return ResponseEntity.status(HttpStatus.OK).body(rst.toString());
+    }
+
+    private ChatMessage getRelationMessage(String userCode, String nextUserCode, boolean isFrom, int newRelation) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setFromUuid(userCode);
+        chatMessage.setType(2);
+        String content = new String();
+        if (isFrom) {
+            chatMessage.setToUuid(userCode);
+            switch (newRelation) {
+            case -1:
+                content = "你向" + ServerUtil.userDataMap.get(nextUserCode).getNickname() + "发动了攻击！";
+                break;
+            case 0:
+                content = "你向" + ServerUtil.userDataMap.get(nextUserCode).getNickname() + "表示了好感。";
+                break;
+            }
+        } else {
+            chatMessage.setToUuid(nextUserCode);
+            switch (newRelation) {
+            case -1:
+                content = ServerUtil.userDataMap.get(userCode).getNickname() + "向你发动了攻击！";
+                break;
+            case 0:
+                content = ServerUtil.userDataMap.get(userCode).getNickname() + "向你表示了好感。";
+                break;
+            }
+        }
+        chatMessage.setContent(content);
+        return chatMessage;
     }
 }

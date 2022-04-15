@@ -30,6 +30,9 @@ spring:
       #如果不配置，虽然本地可以通过这个路径访问，但项目打war包发到tomcat下面，通过这个路径是访问不到的
       path: /h2-console
       enabled: true
+  resources:
+    #修改默认的静态资源存放目录
+#    static-locations: classpath:/
 
 #自定义配置
 person:
